@@ -1,0 +1,2 @@
+export { findBestRating } from './rating'
+
