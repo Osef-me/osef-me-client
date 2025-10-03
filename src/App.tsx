@@ -1,6 +1,6 @@
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
-import { BeatmapDetailPage, BeatmapsetRedirectPage, CurrentPage, ListPage, SettingsPage } from '@/components/pages'
+import { BeatmapDetailPage, BeatmapsetRedirectPage, CurrentPage, Help, ListPage, SettingsPage } from '@/components/pages'
 import AppNavbar from '@/components/templates/Navbar/Navbar'
 import { ThemeProvider } from '@/context/ThemeContext'
 import DownloadPanel from '@/components/organisms/DownloadPanel/DownloadPanel'
@@ -17,6 +17,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<ListPage />} />
           <Route path="/current" element={<CurrentPage />} />
+          <Route path="/help" element={<Help />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/beatmapsets/:beatmapsetOsuId" element={<BeatmapsetRedirectPage />} />
           <Route

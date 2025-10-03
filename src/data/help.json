@@ -1,0 +1,463 @@
+{
+  "patterns": {
+    "title": "Patterns",
+    "description": "Understanding different skillset patterns in rhythm games",
+    "subsections": {
+      "stream": {
+        "title": "Stream",
+        "description": "Continuous single notes requiring finger independence and speed",
+        "content": {
+          "definition": "Stream patterns consist of continuous single notes played in rapid succession, typically requiring each finger to hit individual notes without chord formations.",
+          "gif_url": "stream",
+          "gif_description": "Example of stream pattern showing continuous single notes",
+          "characteristics": [
+            "Single notes only (no chords or not much)",
+            "Consistent spacing between notes",
+            "Requires finger independence",
+            "Speed and accuracy focused"
+          ],
+          "difficulty_factors": [
+            "Note density (notes per second)",
+            "Pattern length and duration", 
+            "Tempo changes and acceleration",
+            "Hand position shifts"
+          ],
+          "example_beatmaps": [
+            {
+              "title": "Aozora Jumping Heart by Skwid",
+              "rating": "30.91",
+              "url": "/beatmapsets/758115/1594746"
+            },
+            {
+              "title": "Courage by Cunu", 
+              "rating": "26.89",
+              "url": "/beatmapsets/1007126/2107804"
+            },
+            {
+              "title": "Shounanzoku -cannibal coast- by Wh1teh",
+              "rating": "25.93", 
+              "url": "/beatmapsets/546972/1158510"
+            }
+          ]
+        }
+      },
+      "jumpstream": {
+        "title": "Jumpstream", 
+        "description": "Mix of single notes and 2-note chords in flowing patterns",
+        "content": {
+          "definition": "Jumpstream combines single notes with 2-note jumps (chords), creating flowing patterns that test both chord accuracy and single note speed.",
+          "gif_url": "jumpstream",
+          "gif_description": "Example of jumpstream showing mix of single notes and 2-note chords",
+          "characteristics": [
+            "Mix of single notes and 2-note chords",
+            "Flowing, continuous patterns",
+            "Requires chord-to-single transitions",
+            "Tests multiple skillsets simultaneously"
+          ],
+          "difficulty_factors": [
+            "Jump frequency and placement",
+            "Overall pattern density",
+            "Chord spacing and hand stretches"
+          ],
+          "example_beatmaps": [
+            {
+              "title": "Cyber Inductance by IcyWorld",
+              "rating": "24.89",
+              "url": "/beatmapsets/827679/1938170"
+            },
+            {
+              "title": "St. Scarhand by IcyWorld",
+              "rating": "22.20",
+              "url": "/beatmapsets/723955/1528509"
+            },
+            {
+              "title": "Life is beautiful by -MysticEyes",
+              "rating": "18.03",
+              "url": "/beatmapsets/860089/2007200"
+            }
+          ]
+        }
+      },
+      "handstream": {
+        "title": "Handstream",
+        "description": "Dense chord patterns requiring both hands simultaneously",
+        "content": {
+          "definition": "Handstream features dense patterns of 3+ note chords with single between them.",
+          "gif_url": "handstream",
+          "gif_description": "Example of handstream showing dense 3+ note chord patterns",
+          "characteristics": [
+            "3+ note chords predominantly",
+            "Dense patterns with singles between them",
+            "Requires full hand coordination",
+            "High physical demand"
+          ],
+          "difficulty_factors": [
+            "Chord density and size",
+            "Pattern variation and variation",
+            "Stamina requirements",
+            "Hand stretch and finger independence"
+          ],
+          "example_beatmaps": [
+            {
+              "title": "Disperagioia by BloowXv2",
+              "rating": "24.89",
+              "url": "/beatmapsets/563737/1192041"
+            },
+            {
+              "title": "H.A.R.D.C.O.R.E by DannyPX",
+              "rating": "30.58",
+              "url": "/beatmapsets/1275606/4421699"
+            },
+            {
+              "title": "Oh Delia by IcyWorld",
+              "rating": "27.23",
+              "url": "/beatmapsets/643991/1365034"
+            }
+          ]
+        }
+      },
+      "chordjack": {
+        "title": "Chordjack",
+        "description": "Repetitive chord patterns testing consistency and stamina",
+        "content": {
+          "definition": "Chordjack patterns feature repetitive chord sequences, often with the same chord repeated multiple times, testing consistency and stamina.",
+          "gif_url": "chordjack",
+          "gif_description": "Example of chordjack showing repetitive chord patterns",
+          "characteristics": [
+            "Repetitive chord patterns",
+            "Same chords hit multiple times",
+            "Stamina and consistency focused",
+            "Often monotonous but challenging"
+          ],
+          "difficulty_factors": [
+            "Chord repetition frequency",
+            "Pattern duration",
+            "Chord size and complexity",
+            "Stamina requirements"
+          ],
+          "example_beatmaps": [
+            {
+              "title": "Moi... Lolita by PouletFurtif",
+              "rating": "18.78",
+              "url": "/beatmapsets/1336097/2815446"
+            },
+            {
+              "title": "Feral by Xeroa",
+              "rating": "29.09",
+              "url": "/beatmapsets/1588792/3246939"
+            },
+            {
+              "title": "Little Dark Age by Hazalax",
+              "rating": "19.89",
+              "url": "/beatmapsets/1836135/3769949"
+            }
+          ]
+        }
+      },
+      "jackspeed": {
+        "title": "Jackspeed",
+        "description": "Single key repetition at high speeds",
+        "content": {
+          "definition": "Jackspeed involves rapid repetition of single keys, testing finger stamina and speed on individual fingers.",
+          "gif_url": "jackspeed",
+          "gif_description": "Example of jackspeed showing single key repetition at high speeds",
+          "characteristics": [
+            "Single key repetition",
+            "High speed requirements",
+            "Individual finger stamina",
+            "Precision under speed"
+          ],
+          "difficulty_factors": [
+            "Repetition speed (notes per second)",
+            "Jack duration",
+            "Key combinations",
+            "Finger endurance"
+          ],
+
+          "example_beatmaps": [
+            {
+              "title": "The Vital Vitriol by Skwid",
+              "rating": "27.61",
+              "url": "/beatmapsets/987801/2066504"
+            },
+            {
+              "title": "Izumi 7983 by AutotelicBrown",
+              "rating": "22.39",
+              "url": "/beatmapsets/1592035/3251619"
+            },
+            {
+              "title": "Memoria (Original Mix) by CloudHolic",
+              "rating": "28.32",
+              "url": "/beatmapsets/589877/1248544"
+            }
+          ]
+        }
+      },
+      "stamina": {
+        "title": "Stamina",
+        "description": "Long, endurance-focused patterns testing physical limits",
+        "content": {
+          "definition": "Stamina patterns are characterized by their length and sustained difficulty, testing physical endurance over extended periods.",
+          "gif_url": "stamina",
+          "gif_description": "Example of stamina showing extended pattern duration",
+          "characteristics": [
+            "Extended pattern duration",
+            "Sustained difficulty",
+            "Physical endurance focus",
+            "Fatigue resistance required"
+          ],
+          "difficulty_factors": [
+            "Pattern length and duration",
+            "Sustained difficulty level",
+            "Break frequency",
+            "Physical demand intensity"
+          ],
+          "example_beatmaps": [
+            {
+              "title": "Livin La Vida Loca by pow wow zee",
+              "rating": "36.31",
+              "url": "/beatmapsets/1848571/3797395"
+            },
+            {
+              "title": "SHARPNEL STAMINA KILLER 2 by NightBunny7",
+              "rating": "26.96",
+              "url": "/beatmapsets/750108/1579755"
+            },
+            {
+              "title": "Observation (Original Mix) by Jhown",
+              "rating": "36.44",
+              "url": "/beatmapsets/2091338/4383325"
+            }
+          ]
+        }
+      },
+      "technical": {
+        "title": "Technical",
+        "description": "Complex patterns requiring precision and pattern recognition",
+        "content": {
+          "definition": "Technical patterns feature complex note arrangements that prioritize precision, pattern recognition, and skillful execution over raw speed.",
+          "gif_url": "technical",
+          "gif_description": "Example of technical showing complex note arrangements",
+          "characteristics": [
+            "Complex note arrangements",
+            "Precision-focused gameplay",
+            "Pattern recognition required",
+            "Skillful execution emphasis"
+          ],
+          "difficulty_factors": [
+            "Pattern complexity",
+            "Timing precision requirements",
+            "Reading difficulty",
+            "Coordination challenges"
+          ],
+          "example_beatmaps": [
+            {
+              "title": "Inferno by Shoegazer",
+              "rating": "28.20",
+              "url": "/beatmapsets/513555/1091191"
+            },
+            {
+              "title": "Toki (maidable Remix) by Shoegazer",
+              "rating": "24.61",
+              "url": "/beatmapsets/687108/1454026"
+            },
+            {
+              "title": "Gang Shit by lemonguy",
+              "rating": "28.07",
+              "url": "/beatmapsets/966210/2022451"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "ratings": {
+    "title": "MSD Rating System",
+    "description": "Understanding the MSD (Mina Standard Difficulty) rating system",
+    "subsections": {
+      "overall": {
+        "title": "Overall Rating",
+        "description": "The main difficulty rating that combines all skillsets",
+        "content": {
+          "definition": "The Overall rating represents the general difficulty of a beatmap, calculated by combining ratings from all individual skillsets.",
+          "calculation": "The overall rating is computed using a weighted average of individual skillset ratings, with emphasis on the player's strongest and weakest areas.",
+          "scale": {
+            "beginner": "1.0 - 10.0",
+            "intermediate": "10.0 - 20.0", 
+            "advanced": "20.0 - 30.0",
+            "expert": "30.0 - 40.0",
+            "god": "40.0+"
+          },
+          "factors": [
+            "Individual skillset ratings",
+            "Pattern density and complexity",
+            "Beatmap length and structure",
+            "Difficulty spikes and consistency"
+          ],
+          "interpretation": [
+            "Higher values indicate more difficult maps",
+            "Compare within similar pattern types",
+            "Consider your personal skillset strengths"
+          ]
+        }
+      },
+      "skillsets": {
+        "title": "Skillset Ratings",
+        "description": "Individual ratings for each pattern type",
+        "content": {
+          "definition": "Each beatmap receives individual ratings for different skillsets (Stream, Jumpstream, etc.), showing which patterns are most prominent.",
+          "individual_skillsets": [
+            "Stream - Continuous single notes",
+            "Jumpstream - Mixed singles and jumps", 
+            "Handstream - Dense chord patterns",
+            "Chordjack - Repetitive chords",
+            "Jackspeed - Single key repetition",
+            "Stamina - Endurance patterns",
+            "Technical - Complex arrangements"
+          ],
+          "reading_charts": [
+            "Radar charts show all skillsets at once",
+            "Larger areas indicate higher ratings",
+            "Compare relative strengths between patterns",
+            "Look for dominant skillsets"
+          ],
+          "usage_tips": [
+            "Focus on your weakest skillsets for improvement",
+            "Find maps strong in patterns you enjoy",
+            "Use for targeted practice",
+            "Understand your playing style"
+          ]
+        }
+      },
+      "rates": {
+        "title": "Rate Modifiers",
+        "description": "How speed modifications affect difficulty ratings",
+        "content": {
+          "definition": "Rate modifiers change the playback speed of beatmaps, affecting difficulty. Common rates include 0.9x (slower) to 1.1x+ (faster).",
+          "common_rates": {
+            "0.9x": "10% slower - Easier timing, good for learning",
+            "1.0x": "Normal speed - Standard difficulty rating",
+            "1.05x": "5% faster - Slight difficulty increase",
+            "1.1x": "10% faster - Noticeable difficulty increase",
+            "1.2x+": "20%+ faster - Significantly harder"
+          },
+          "difficulty_scaling": [
+            "Higher rates increase all skillset ratings",
+            "Some patterns scale more than others",
+            "Speed-based patterns scale most dramatically",
+            "Technical patterns may scale less"
+          ],
+          "practice_usage": [
+            "Use lower rates to learn difficult patterns",
+            "Practice at normal rate for skill building", 
+            "Use higher rates for speed training",
+            "Find your comfort zone for improvement"
+          ],
+          "rating_calculation": "Rate modifiers multiply base difficulty by rate-specific scaling factors, with different curves for each skillset."
+        }
+      }
+    }
+  },
+  "navigation": {
+    "title": "Using the Website",
+    "description": "Guide to navigating and using all website features",
+    "subsections": {
+      "search": {
+        "title": "Search & Filters",
+        "description": "How to find beatmaps using search and filtering options",
+        "content": {
+          "search_functionality": [
+            "Search by beatmap title, artist, or creator name",
+            "Use partial matches for broad results",
+            "Search is case-insensitive",
+            "Supports special characters"
+          ],
+          "filter_options": {
+            "overall_rating": "Set minimum and maximum overall difficulty (e.g., 15.0 - 25.0)",
+            "pattern_selection": "Choose specific skillsets to focus on",
+            "pattern_rating": "Set difficulty range for chosen pattern",
+            "combined_filters": "Use multiple filters together for precise results"
+          },
+          "filter_tips": [
+            "Start with broad filters and narrow down",
+            "Use pattern filters to practice specific skills",
+            "Combine search with filters for best results",
+            "Reset filters to start fresh"
+          ],
+          "search_examples": [
+            "Search 'freedom' + Stream filter 20-25 = Stream-focused Freedom Dive variants",
+            "Artist 'xi' + Overall 25+ = Challenging xi beatmaps",
+            "Creator 'ExampleMapper' = All maps by specific charter"
+          ]
+        }
+      },
+      "beatmap-view": {
+        "title": "Beatmap Details",
+        "description": "Understanding the detailed beatmap information page",
+        "content": {
+          "header_information": [
+            "Beatmap cover image and basic info",
+            "Artist, title, and creator details", 
+            "Download link and external links",
+            "Difficulty selection buttons"
+          ],
+          "msd_charts": {
+            "radar_chart": "Visual representation of all skillset ratings",
+            "rate_evolution": "How difficulty changes across different rates",
+            "rate_selector": "Choose different rates to see rating changes",
+            "interpretation": "Larger radar areas = higher difficulty in those skillsets"
+          },
+          "difficulty_selection": [
+            "Multiple difficulties per beatmapset",
+            "Click difficulty buttons to switch",
+            "Each difficulty has unique MSD ratings",
+            "Sorted by overall difficulty (easiest to hardest)"
+          ],
+          "usage_tips": [
+            "Check radar chart to understand pattern focus",
+            "Use rate selector to find your skill level",
+            "Compare difficulties within same beatmapset",
+            "Download from header for playing"
+          ]
+        }
+      },
+      "preview": {
+        "title": "Beatmap Preview", 
+        "description": "Using the interactive beatmap preview system",
+        "content": {
+          "preview_features": [
+            "Visual representation of note patterns",
+            "Playback controls (play, pause, reset)",
+            "Scroll speed adjustment",
+            "Customizable visual settings"
+          ],
+          "controls": {
+            "play_pause": "Start or stop pattern playback",
+            "reset": "Return to beginning of preview",
+            "scroll_speed": "Adjust how fast notes scroll (0.1x - 0.9x)",
+            "settings": "Customize visual appearance"
+          },
+          "visual_settings": [
+            "Scroll direction (upscroll/downscroll)",
+            "Note shape (circle, arrow, rectangle, diamond)",
+            "Note colors (customizable)",
+            "Long note (LN) colors",
+            "Progress bar position"
+          ],
+          "usage_benefits": [
+            "Preview patterns before downloading",
+            "Understand note layouts visually",
+            "Practice reading at different speeds",
+            "Customize for your preferred style"
+          ],
+          "limitations": [
+            "Preview only - not full gameplay",
+            "Limited to visual representation",
+            "No scoring or timing feedback",
+            "Simplified note rendering"
+          ]
+        }
+      }
+    }
+  }
+}
