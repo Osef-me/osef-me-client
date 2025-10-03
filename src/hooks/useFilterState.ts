@@ -9,6 +9,7 @@ export type FilterKind =
   | 'technical_od'
   | 'technical_status'
   | 'drain'
+  | 'random'
 
 export interface UseFilterStateOptions {
   initialBlocks?: FilterKind[]

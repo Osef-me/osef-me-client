@@ -3,7 +3,7 @@ import MinMaxRange from '@/components/atoms/data-input/MinMaxRange/MinMaxRange'
 import SearchInput from '@/components/atoms/data-input/SearchInput'
 import Select from '@/components/atoms/data-input/Select/Select'
 
-export type FilterBlockKind = 'minmax' | 'dropdown' | 'search'
+export type FilterBlockKind = 'minmax' | 'dropdown' | 'search' | 'toggle'
 
 export type FilterBlockProps =
   | {
@@ -33,6 +33,15 @@ export type FilterBlockProps =
       value: string
       onChange: (value: string) => void
       placeholder?: string
+      className?: string
+    }
+  | {
+      kind: 'toggle'
+      id: string
+      label: string
+      tooltip: string
+      value: boolean
+      onChange: (value: boolean) => void
       className?: string
     }
 
@@ -66,16 +75,33 @@ const FilterBlock: React.FC<FilterBlockProps> = (props) => {
       />
     )
   }
-  // search
-  const { id, value, onChange, placeholder, className } = props
+  if (props.kind === 'search') {
+    const { id, value, onChange, placeholder, className } = props
+    return (
+      <div className={className}>
+        <SearchInput
+          id={id}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder || 'Search…'}
+        />
+      </div>
+    )
+  }
+  // toggle
+  const { id, label, tooltip, value, onChange, className } = props
   return (
-    <div className={className}>
-      <SearchInput
-        id={id}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder || 'Search…'}
-      />
+    <div className={`form-control ${className || ''}`} title={tooltip}>
+      <label className="label cursor-pointer justify-start gap-3">
+        <input
+          type="checkbox"
+          id={id}
+          className="toggle toggle-primary"
+          checked={value}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+        <span className="label-text">{label}</span>
+      </label>
     </div>
   )
 }

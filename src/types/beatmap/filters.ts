@@ -6,8 +6,19 @@ export type RatingFilter = {
   rating_max?: number
 }
 
+export type SkillsetType =
+  | 'stream'
+  | 'jumpstream'
+  | 'handstream'
+  | 'stamina'
+  | 'jackspeed'
+  | 'chordjack'
+  | 'technical'
+  | 'hybrid'
+  | 'ln'
+
 export type SkillsetFilter = {
-  pattern_type?: string
+  pattern_type?: SkillsetType
   pattern_min?: number | null
   pattern_max?: number
 }
@@ -37,6 +48,7 @@ export type BeatmapListParams = {
   beatmap?: BeatmapFilter
   beatmap_technical?: BeatmapTechnicalFilter
   rates?: RatesFilter
+  random?: boolean
   page?: number // 0-based
   per_page?: number
 }

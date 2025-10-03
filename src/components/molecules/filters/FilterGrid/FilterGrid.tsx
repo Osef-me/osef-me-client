@@ -47,9 +47,7 @@ const FilterGrid: React.FC<FilterGridProps> = ({
       {blocks.map((block, index) => (
         <div
           key={block.kind}
-          className={`relative group transition-all duration-200 ${
-            activeIndex === index ? 'ring-2 ring-primary/30 bg-base-100/50' : ''
-          }`}
+          className={`relative group transition-all duration-200`}
         >
           <button
             type="button"
@@ -62,9 +60,6 @@ const FilterGrid: React.FC<FilterGridProps> = ({
             <MdClose size={14} />
           </button>
           <div className="pr-6">{block.component}</div>
-          {activeIndex === index && (
-            <div className="absolute inset-0 border-2 border-primary/30 rounded-lg pointer-events-none" />
-          )}
         </div>
       ))}
     </div>

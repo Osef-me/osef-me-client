@@ -1,4 +1,5 @@
 import type React from 'react'
+import { useId } from 'react'
 // Components
 import {
   FilterBlockBpm,
@@ -12,16 +13,71 @@ import {
   FilterGrid,
   FilterSectionHeader,
 } from '@/components/molecules'
+import FilterBlockRandom from '@/components/molecules/FilterBlock/blocks/FilterBlockRandom'
 import { useDropdown } from '@/hooks/useDropdown'
 
 // Hooks
 import { useFilterState } from '@/hooks/useFilterState'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { useToast } from '@/hooks/useToast'
 import type { BeatmapListParams } from '@/types/beatmap/filters'
 import type { FilterSectionProps, SectionKind } from './FilterSection.props'
 
 const FilterSection: React.FC<FilterSectionProps> = ({ value, onChange, className }) => {
   const update = (partial: Partial<BeatmapListParams>) => onChange({ ...value, ...partial })
+  const filterSectionId = useId()
+  const toast = useToast()
+
+  // Filter sharing functions
+  const serializeFilters = (filters: BeatmapListParams): string => {
+    const cleanFilters = { ...filters }
+    // Remove page and per_page as they're not part of the filter state
+    delete cleanFilters.page
+    delete cleanFilters.per_page
+    return btoa(JSON.stringify(cleanFilters))
+  }
+
+  const deserializeFilters = (encoded: string): BeatmapListParams | null => {
+    try {
+      const decoded = JSON.parse(atob(encoded))
+      return decoded
+    } catch {
+      return null
+    }
+  }
+
+  const copyFiltersToClipboard = async () => {
+    try {
+      const serialized = serializeFilters(value)
+      await navigator.clipboard.writeText(serialized)
+      toast.showSuccess('Filters copied to clipboard!')
+    } catch (err) {
+      console.error('Failed to copy filters to clipboard:', err)
+      toast.showError('Failed to copy filters')
+    }
+  }
+
+  const pasteFiltersFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText()
+      const filters = deserializeFilters(text)
+      if (filters) {
+        onChange({ ...filters, page: 0, per_page: value.per_page })
+        toast.showSuccess('Filters applied successfully!')
+      } else {
+        toast.showError('Invalid filter format')
+      }
+    } catch (err) {
+      console.error('Failed to paste filters from clipboard:', err)
+      toast.showError('Failed to paste filters')
+    }
+  }
+
+  const rerollBeatmaps = () => {
+    // Force refresh by changing a parameter that doesn't affect the results
+    onChange({ ...value, page: Math.random() })
+    toast.showInfo('Rerolling beatmaps...')
+  }
 
   // Use custom hooks
   const dropdown = useDropdown()
@@ -176,6 +232,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({ value, onChange, classNam
             }
           />
         )
+      case 'random':
+        return (
+          <FilterBlockRandom
+            value={value.random ?? false}
+            onChange={(v) => update({ random: v })}
+            onReroll={rerollBeatmaps}
+          />
+        )
       default:
         return null
     }
@@ -190,18 +254,20 @@ const FilterSection: React.FC<FilterSectionProps> = ({ value, onChange, classNam
     { value: 'technical_od', label: 'OD' },
     { value: 'technical_status', label: 'Status' },
     { value: 'drain', label: 'Drain Time' },
+    { value: 'random', label: 'Random' },
   ]
   const availableKinds = allKinds.filter((k) => !filterState.blocks.includes(k.value))
 
   const filterBlocks = filterState.blocks.map((kind) => ({
     kind,
+    key: `${kind}-${JSON.stringify(value)}`, // Force re-render when values change
     component: renderBlock(kind),
   }))
 
   return (
     <section
       className={`card bg-base-200 border border-base-300 transition-all duration-200 hover:shadow-md focus-within:ring-2 focus-within:ring-primary/20 ${className || ''}`}
-      aria-labelledby="filter-section-title"
+      aria-labelledby={`${filterSectionId}-title`}
     >
       <div className="card-body p-3 sm:p-4">
         <FilterSectionHeader
@@ -221,10 +287,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({ value, onChange, classNam
           activeFilterCount={filterState.blocks.length}
           canRemove={filterState.blocks.length > 0}
           canClear={filterState.blocks.length > 0}
+          onCopyFilters={copyFiltersToClipboard}
+          onPasteFilters={pasteFiltersFromClipboard}
+          filterSectionId={filterSectionId}
         />
 
         <FilterGrid
-          blocks={filterBlocks}
+          blocks={filterBlocks.map(block => ({ ...block, key: block.key }))}
           activeIndex={filterState.activeFilterIndex}
           onRemove={filterState.removeBlock}
           onBlockFocus={filterState.setActiveFilterIndex}

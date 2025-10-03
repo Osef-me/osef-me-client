@@ -9,6 +9,7 @@ export type SectionKind =
   | 'technical_od'
   | 'technical_status'
   | 'drain'
+  | 'random'
 
 export type FilterSectionProps = {
   value: BeatmapListParams

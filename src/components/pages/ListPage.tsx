@@ -1,106 +1,101 @@
 import type React from 'react'
-import { useCallback, useEffect, useState } from 'react'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import { getBeatmaps } from '@/api/get_short'
 import { BeatmapGrid } from '@/components/molecules'
 import FilterSection from '@/components/organisms/FilterSection/FilterSection'
-import type { PaginatedResponse } from '@/types'
-import type { BeatmapListParams } from '@/types/beatmap/filters'
-import type { BeatmapsetShort } from '@/types/beatmap/short'
+import { useBeatmaps } from '@/hooks/beatmap/useBeatmaps'
+import { useBeatmapFilters } from '@/hooks/beatmap/useBeatmapFilters'
 
 const ListPage: React.FC = () => {
-  const [items, setItems] = useState<BeatmapsetShort[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [page, setPage] = useState<number>(0)
-  const [perPage] = useState<number>(9)
-  const [total, setTotal] = useState<number>(0)
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
-  const [filters, setFilters] = useState<BeatmapListParams>({ page: 0, per_page: 9 })
+  const filtersManager = useBeatmapFilters()
+  const { filters } = filtersManager
 
-  const buildParams = useCallback(
-    (pageNum: number, perPageNum: number): BeatmapListParams => {
-      const base = { ...filters }
-      const rating = { rating_type: 'etterna', ...(base.rating || {}) }
-      return { ...base, rating, page: pageNum, per_page: perPageNum }
-    },
-    [filters]
-  )
-
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        const res = await getBeatmaps(buildParams(0, perPage))
-        if (!mounted) return
-        setItems(res.data)
-        setTotal(res.pagination?.total ?? res.data.length)
-        setPage(0)
-      } catch (e: any) {
-        if (!mounted) return
-        setError(e?.message || 'Failed to load beatmaps')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [perPage, buildParams])
-
-  const hasMore = items.length < total
-
-  const loadMore = useCallback(async () => {
-    if (loading || isLoadingMore || !hasMore) return
-    setIsLoadingMore(true)
-    const nextPage = page + 1
-    try {
-      const res: PaginatedResponse<BeatmapsetShort> = await getBeatmaps(
-        buildParams(nextPage, perPage)
-      )
-      setItems((prev) => [...prev, ...res.data])
-      setPage(nextPage)
-      setTotal(res.pagination?.total ?? res.data.length)
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load more beatmaps')
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }, [loading, isLoadingMore, hasMore, page, buildParams, perPage])
-
-  // Auto-load more if content doesn't overflow (no scrollbar)
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (loading || isLoadingMore) return
-    if (!hasMore) return
-    const needsMore = document.documentElement.scrollHeight <= window.innerHeight + 8
-    if (needsMore) {
-      // Fire and forget; library will append
-      loadMore()
-    }
-  }, [loading, isLoadingMore, hasMore, loadMore])
-
-  if (loading) return <div>Loading…</div>
-  if (error) return <div className="text-error">{error}</div>
-  if (!items || items.length === 0) return <div>No results</div>
+  const {
+    data: items,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    refetch,
+    nextPage,
+    prevPage,
+    hasNextPage,
+    hasPrevPage
+  } = useBeatmaps(filters)
 
   return (
     <>
       <div className="mb-4">
         <FilterSection
           value={filters}
-          onChange={(v) => setFilters({ ...v, page: 0, per_page: perPage })}
+          onChange={filtersManager.setFilters}
         />
       </div>
-      <InfiniteScroll
-        dataLength={items.length}
-        next={loadMore}
-        hasMore={hasMore}
-        loader={<div className="py-4 text-center">Loading…</div>}
-        style={{ overflow: 'visible' }}
-      >
-        <BeatmapGrid beatmapsets={items} />
-      </InfiniteScroll>
+
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="text-6xl mb-4">⏳</div>
+          <h3 className="text-xl font-semibold mb-2">Loading beatmaps...</h3>
+          <p className="text-base-content/70">
+            Please wait while we fetch the latest beatmaps
+          </p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-8">
+          <div className="text-6xl mb-4">❌</div>
+          <h3 className="text-xl font-semibold mb-2 text-error">Error loading beatmaps</h3>
+          <p className="text-base-content/70 mb-4">{error}</p>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={refetch}
+          >
+            Retry
+          </button>
+        </div>
+      ) : !items || items.length === 0 ? (
+        <div className="text-center py-8">
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-semibold mb-2">No results found</h3>
+          <p className="text-base-content/70 mb-4">
+            Try adjusting your filters or search criteria
+          </p>
+        </div>
+      ) : (
+        <>
+          <BeatmapGrid beatmapsets={items} />
+
+          {/* Pagination Controls - Only show when not in random mode */}
+          {!filters.random && totalPages > 1 && (
+            <div className="flex items-center justify-between mt-8 px-4">
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={prevPage}
+                disabled={!hasPrevPage}
+              >
+                ← Previous
+              </button>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-base-content/70">
+                  Page {currentPage + 1} of {totalPages}
+                </span>
+                <span className="text-sm text-base-content/50">
+                  ({items.length} results)
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={nextPage}
+                disabled={!hasNextPage}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </>
   )
 }

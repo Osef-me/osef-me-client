@@ -16,9 +16,23 @@ export const DifficultyBadgeList: React.FC<DifficultyBadgeListProps> = ({
   ratingType,
   onBeatmapClick,
 }) => {
+  // Sort beatmaps by etterna rating (ascending), then by other ratings as fallback
+  const sortedBeatmaps = [...beatmaps].sort((a, b) => {
+    const ratingA = findBestRating(a, ratingType)
+    const ratingB = findBestRating(b, ratingType)
+
+    // If no ratings available, maintain original order
+    if (!ratingA && !ratingB) return 0
+    if (!ratingA) return 1
+    if (!ratingB) return -1
+
+    // Sort by rating value (ascending - lowest rating first)
+    return ratingA.rating_value - ratingB.rating_value
+  })
+
   return (
     <div className="flex flex-wrap gap-4 mb-4">
-      {beatmaps.map((beatmap) => {
+      {sortedBeatmaps.map((beatmap) => {
         const bestRating = findBestRating(beatmap, ratingType)
         if (!bestRating) return null
 

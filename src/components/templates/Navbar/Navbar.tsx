@@ -25,12 +25,6 @@ const navItems: NavItem[] = [
     icon: MdHome,
     matchPath: (pathname) => pathname === '/',
   },
-  {
-    label: 'Random',
-    path: '/random',
-    icon: MdShuffle,
-    matchPath: (pathname) => pathname.startsWith('/random'),
-  },
 ]
 
 const Navbar: React.FC<NavbarTemplateProps> = ({

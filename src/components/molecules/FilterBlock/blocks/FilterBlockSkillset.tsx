@@ -1,6 +1,6 @@
 import type React from 'react'
 import { useId } from 'react'
-import type { SkillsetFilter } from '@/types/beatmap/filters'
+import type { SkillsetFilter, SkillsetType } from '@/types/beatmap/filters'
 import FilterBlock from '../FilterBlock'
 
 export type FilterBlockSkillsetProps = {
@@ -9,7 +9,7 @@ export type FilterBlockSkillsetProps = {
   className?: string
 }
 
-const patternOptions = [
+const skillsetOptions: Array<{ value: SkillsetType | '', label: string }> = [
   { value: '', label: 'Any' },
   { value: 'stream', label: 'Stream' },
   { value: 'jumpstream', label: 'Jumpstream' },
@@ -25,33 +25,33 @@ const patternOptions = [
 const FilterBlockSkillset: React.FC<FilterBlockSkillsetProps> = ({
   value,
   onChange,
-  className,
 }) => {
   const skillsetTypeId = useId()
-  const skillsetId = useId()
   
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-3 gap-3 ${className || ''}`}>
-      <FilterBlock
-        kind="dropdown"
-        id={skillsetTypeId}
-        label="Skillset"
-        value={value?.pattern_type || ''}
-        onChange={(v) => onChange({ ...value, pattern_type: v })}
-        options={patternOptions}
-        className="col-span-1"
-      />
-      <FilterBlock
-        kind="minmax"
-        id={skillsetId}
-        label="Skillset"
-        tooltip="skillset value"
-        minValue={value?.pattern_min ?? undefined}
-        maxValue={value?.pattern_max ?? undefined}
-        onMinChange={(v) => onChange({ ...value, pattern_min: v ?? undefined })}
-        onMaxChange={(v) => onChange({ ...value, pattern_max: v ?? undefined })}
-        className="col-span-2"
-      />
+    <div className="flex gap-3 items-end">
+      <div className="flex-1">
+        <FilterBlock
+          kind="dropdown"
+          id={skillsetTypeId}
+          label="Skillset"
+          value={value?.pattern_type as SkillsetType || ''}
+          onChange={(v) => onChange({ ...value, pattern_type: v as SkillsetType })}
+          options={skillsetOptions}
+        />
+      </div>
+      <div className="flex-[2]">
+        <FilterBlock
+          kind="minmax"
+          idPrefix="skillset"
+          label=""
+          tooltip="skillset value"
+          minValue={value?.pattern_min ?? undefined}
+          maxValue={value?.pattern_max ?? undefined}
+          onMinChange={(v) => onChange({ ...value, pattern_min: v ?? undefined })}
+          onMaxChange={(v) => onChange({ ...value, pattern_max: v ?? undefined })}
+        />
+      </div>
     </div>
   )
 }

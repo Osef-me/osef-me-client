@@ -4,8 +4,12 @@ import { BeatmapDetailPage, BeatmapsetRedirectPage, CurrentPage, ListPage, Setti
 import AppNavbar from '@/components/templates/Navbar/Navbar'
 import { ThemeProvider } from '@/context/ThemeContext'
 import DownloadPanel from '@/components/organisms/DownloadPanel/DownloadPanel'
+import ToastContainer from '@/components/atoms/feedback/Toast/ToastContainer'
+import { useToast } from '@/hooks/useToast'
 
 const App = () => {
+  const toast = useToast()
+
   return (
     <ThemeProvider>
       <AppNavbar />
@@ -22,6 +26,7 @@ const App = () => {
         </Routes>
       </main>
       <DownloadPanel />
+      <ToastContainer toasts={toast.toasts} onRemoveToast={toast.removeToast} />
     </ThemeProvider>
   )
 }
