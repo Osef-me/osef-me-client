@@ -45,11 +45,11 @@ const RemoteBeatmapDetail: React.FC = () => {
 
   // Calculate NPS automatically when beatmap loads
   useEffect(() => {
-    if (currentBeatmap && beatmapsetOsuId) {
-      const osuUrl = `https://osu.ppy.sh/beatmapsets/${beatmapsetOsuId}/download`
+    if (currentBeatmap) {
+      const osuUrl = `https://osu.ppy.sh/osu/${currentBeatmap.beatmap_osu_id}`
       calculateNps(osuUrl)
     }
-  }, [currentBeatmap, beatmapsetOsuId, calculateNps])
+  }, [currentBeatmap, calculateNps])
 
   const handleBeatmapChange = useCallback(
     (beatmap: BeatmapInfo) => {
