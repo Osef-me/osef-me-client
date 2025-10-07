@@ -12,7 +12,7 @@ export interface UseBeatmapFiltersResult {
 }
 
 export const useBeatmapFilters = (
-  initialFilters: BeatmapListParams = { page: 0, per_page: 9 }
+  initialFilters: BeatmapListParams = {}
 ): UseBeatmapFiltersResult => {
   // Load persisted filters from localStorage
   const loadPersistedFilters = useCallback((): BeatmapListParams => {
@@ -20,8 +20,9 @@ export const useBeatmapFilters = (
       const stored = localStorage.getItem(FILTERS_STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored)
-        // Ensure page and per_page are set correctly
-        return { ...parsed, page: 0, per_page: 9 }
+        // Remove page and per_page from stored filters
+        const { page: _, per_page: __, ...filterParams } = parsed
+        return filterParams
       }
     } catch (error) {
       console.warn('Failed to load persisted filters:', error)
@@ -45,20 +46,22 @@ export const useBeatmapFilters = (
   }, [filters])
 
   const setFilters = useCallback((newFilters: BeatmapListParams) => {
-    setFiltersState({ ...newFilters, page: 0, per_page: 9 })
+    // Remove page and per_page from filters as they are managed by useBeatmaps
+    const { page: _, per_page: __, ...filterParams } = newFilters
+    setFiltersState(filterParams)
   }, [])
 
   const updateFilters = useCallback((partial: Partial<BeatmapListParams>) => {
+    // Remove page and per_page from partial as they are managed by useBeatmaps
+    const { page: _, per_page: __, ...filterParams } = partial
     setFiltersState(prev => ({
       ...prev,
-      ...partial,
-      page: 0, // Reset page when filters change
-      per_page: 9
+      ...filterParams
     }))
   }, [])
 
   const resetFilters = useCallback(() => {
-    setFiltersState({ page: 0, per_page: 9 })
+    setFiltersState({})
     try {
       localStorage.removeItem(FILTERS_STORAGE_KEY)
     } catch (error) {

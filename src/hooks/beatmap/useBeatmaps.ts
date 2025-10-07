@@ -38,6 +38,11 @@ export const useBeatmaps = (
   const [error, setError] = useState<string | null>(null)
   const [mounted] = useState<boolean>(true)
 
+  // Reset to page 0 when filters change (excluding page changes)
+  useEffect(() => {
+    setCurrentPage(0)
+  }, [JSON.stringify(params)])
+
   const goToPage = useCallback((page: number) => {
     if (!enabled || loading) return
     setCurrentPage(page)
@@ -85,7 +90,7 @@ export const useBeatmaps = (
           // Add skillset parameters if skillset filter exists
           if (base.skillset) {
             apiParams.pattern_type = base.skillset.pattern_type || ''
-            if (base.skillset.pattern_min !== undefined) {
+            if (base.skillset.pattern_min !== undefined && base.skillset.pattern_min !== null) {
               apiParams.pattern_min = base.skillset.pattern_min
             }
             if (base.skillset.pattern_max !== undefined) {
@@ -196,7 +201,7 @@ export const useBeatmaps = (
         // Add rating parameters if rating filter exists
         if (base.rating) {
           apiParams.rating_type = base.rating.rating_type || 'etterna'
-          if (base.rating.rating_min !== undefined) {
+          if (base.rating.rating_min !== undefined && base.rating.rating_min !== null) {
             apiParams.rating_min = base.rating.rating_min
           }
           if (base.rating.rating_max !== undefined) {
