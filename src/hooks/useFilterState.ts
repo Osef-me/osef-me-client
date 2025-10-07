@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 
 export type FilterKind =
   | 'rating'
@@ -22,6 +22,9 @@ export const useFilterState = (options: UseFilterStateOptions = {}) => {
   const { initialBlocks = [], onBlockAdd, onBlockRemove, onClearAll } = options
   const [blocks, setBlocks] = useState<FilterKind[]>(initialBlocks)
   const [activeFilterIndex, setActiveFilterIndex] = useState(-1)
+
+  // Note: blocks are managed manually by the user through the dropdown
+  // We don't auto-sync with activeFilters to avoid conflicts
 
   const addBlock = useCallback(
     (kind: FilterKind) => {

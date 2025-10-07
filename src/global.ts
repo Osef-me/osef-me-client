@@ -8,7 +8,7 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
 }
 
 // API Configuration
-export const API_BASE_URL = getEnvVar('VITE_API_BASE_URL', 'http://localhost:3001/api/')
+export const API_BASE_URL = getEnvVar('VITE_API_BASE_URL', 'https://api.osef.me/api/')
 
 // App Configuration
 export const APP_NAME = getEnvVar('VITE_APP_NAME', 'Osefme Frontend')

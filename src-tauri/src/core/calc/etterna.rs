@@ -1,5 +1,5 @@
-use crate::calc::osu::get_star_rating;
-use crate::models::react::{ManiaRating, ModeRating, Rates, Rating};
+use super::osu::get_star_rating;
+use crate::core::react::{ManiaRating, ModeRating, Rates, Rating};
 use anyhow::Result;
 use rosu_map::Beatmap as RmBeatmap;
 use minacalc_rs::{hashmap::HashMapCalcExt, OsuCalcExt, Calc, Ssr};

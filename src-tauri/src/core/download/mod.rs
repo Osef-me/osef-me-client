@@ -3,8 +3,8 @@ mod http;
 mod stream;
 mod types;
 
-use crate::commands::settings;
-use helpers::{emit_status, format_mb, mark_completed, mark_failed, update_status};
+use crate::core::preferences as preferences;
+use helpers::{emit_status, mark_completed, mark_failed, update_status};
 use http::fetch_beatmap;
 use std::fs;
 use std::path::PathBuf;
@@ -12,10 +12,9 @@ use stream::stream_download;
 use tauri::AppHandle;
 use types::{DownloadState, DownloadStatus, DOWNLOAD_MANAGER, DOWNLOAD_SEMAPHORE};
 
-/// Test download event for debugging
-#[tauri::command]
+/// Test download event for debugging (core)
 pub async fn test_download_event(app_handle: AppHandle, beatmapset_id: i32) -> Result<String, String> {
-    println!("🧪 Testing download event for beatmap {}", beatmapset_id);
+    
 
     if let Ok(mut manager) = DOWNLOAD_MANAGER.lock() {
         manager.insert(beatmapset_id, DownloadStatus {
@@ -34,8 +33,7 @@ pub async fn test_download_event(app_handle: AppHandle, beatmapset_id: i32) -> R
     Ok("Test event emitted".to_string())
 }
 
-/// Main download command - queues download and returns immediately
-#[tauri::command]
+/// Queue and start a download from URL (core)
 pub async fn download_beatmap_from_url(
     app_handle: AppHandle,
     url: String,
@@ -96,7 +94,7 @@ async fn download_beatmap(
     url: String,
     filename: String,
 ) -> Result<(), String> {
-    println!("🌐 Starting download: {}", url);
+    
 
     // Load config and prepare paths
     let songs_path = get_songs_path()?;
@@ -119,8 +117,7 @@ async fn download_beatmap(
         e
     })?;
 
-    let total_size = response.content_length().unwrap_or(0);
-    println!("📏 Download size: {:.1} MB", format_mb(total_size));
+    let _ = response.content_length();
 
     let buffer = stream_download(response, beatmapset_id, &app_handle)
         .await
@@ -135,7 +132,7 @@ async fn download_beatmap(
         e
     })?;
 
-    println!("✅ Download completed: {:?} ({:.1} MB)", file_path, format_mb(buffer.len() as u64));
+    
     
     mark_completed(&app_handle, beatmapset_id);
     
@@ -144,7 +141,7 @@ async fn download_beatmap(
 
 /// Get songs path from config
 fn get_songs_path() -> Result<PathBuf, String> {
-    let config = std::panic::catch_unwind(settings::load_config)
+    let config = std::panic::catch_unwind(preferences::load_config)
         .map_err(|_| "Failed to load config".to_string())?;
     
     Ok(PathBuf::from(&config.songs_path))

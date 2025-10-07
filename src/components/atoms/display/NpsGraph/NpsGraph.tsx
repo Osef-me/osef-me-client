@@ -32,7 +32,7 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Toolti
 }
 
 const NpsGraph: React.FC<NpsGraphProps> = ({ npsData, className = '' }) => {
-  // Convertir le tableau de NPS en données pour le graphique
+  // Convert NPS array to chart data
   const chartData = npsData.map((nps, index) => ({
     time: index,
     nps: nps,

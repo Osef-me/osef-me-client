@@ -1,19 +1,23 @@
-use crate::models::react::{Beatmapset, BeatmapModifications, Rates};
-use crate::beatmap::monitoring::{emit_beatmap_changed, CurrentBeatmapWithRates};
-use crate::beatmap::serialization::serialize_beatmap;
-use tauri::{AppHandle, Manager};
+use crate::core::react::{Beatmapset, BeatmapModifications, Rates, NpsData};
+use crate::core::beatmap::{
+    get_current_beatmap_from_state,
+    get_all_rates_from_state,
+    apply_beatmap_modifications_core,
+    emit_demo_beatmap_core,
+};
+use crate::core::calc::nps::calculate_nps_graph;
+use tauri::AppHandle;
+use rosu_map::Beatmap as RmBeatmap;
+use std::fs;
+use std::str::FromStr;
+use reqwest;
 
 // Command to get the current beatmap from the global state
 #[tauri::command]
 pub async fn get_current_beatmap(
     app_handle: AppHandle,
 ) -> Result<Option<Beatmapset>, String> {
-    // Récupérer le CurrentBeatmapWithRates depuis le state de l'app
-    let current_beatmap = app_handle.state::<CurrentBeatmapWithRates>();
-    let beatmap_with_rates = current_beatmap.lock().await;
-
-    // Sérialiser le BeatmapInfo en Beatmapset pour le frontend
-    Ok(beatmap_with_rates.as_ref().map(|bwr| serialize_beatmap(&bwr.beatmap_info, "Songs/")))
+    Ok(get_current_beatmap_from_state(&app_handle).await)
 }
 
 // Command to get all rates for the current beatmap
@@ -21,11 +25,7 @@ pub async fn get_current_beatmap(
 pub async fn get_all_rates(
     app_handle: AppHandle,
 ) -> Result<Vec<Rates>, String> {
-    // Récupérer les rates calculés depuis le state
-    let current_beatmap = app_handle.state::<CurrentBeatmapWithRates>();
-    let beatmap_with_rates = current_beatmap.lock().await;
-
-    Ok(beatmap_with_rates.as_ref().map(|bwr| bwr.rates.clone()).unwrap_or_default())
+    Ok(get_all_rates_from_state(&app_handle).await)
 }
 
 // Command to apply modifications to a beatmap and create a copy
@@ -34,36 +34,41 @@ pub async fn apply_beatmap_modifications(
     _beatmap_osu_id: i32,
     modifications: BeatmapModifications,
 ) -> Result<Beatmapset, String> {
-    // TODO: Implémenter la logique pour créer une copie modifiée de la beatmap
-    // Pour l'instant, retourne un beatmapset de test
-    let modified_beatmap = Beatmapset::default();
-
-    // Appliquer les modifications (simulées)
-    println!("Applying modifications: {:?}", modifications);
-
-    Ok(modified_beatmap)
+    apply_beatmap_modifications_core(_beatmap_osu_id, modifications)
 }
 
 // Demo command to emit a beatmap with an incremented counter
 #[tauri::command]
 pub async fn emit_demo_beatmap(app_handle: AppHandle, counter: u32) -> Result<(), String> {
-    // Générer une beatmap de démo basée sur le compteur
-    let mut beatmap = Beatmapset::default();
+    emit_demo_beatmap_core(&app_handle, counter)
+}
 
-    beatmap.artist = format!("Demo Artist {}", counter);
-    beatmap.title = format!("Demo Song {}", counter);
-    beatmap.creator = format!("Demo Mapper {}", counter);
-    beatmap.osu_id = Some(100000 + counter as i32);
+// Command to calculate NPS from a beatmap URL (for remote beatmaps)
+#[tauri::command]
+pub async fn calculate_nps_from_beatmap_url(beatmap_url: String) -> Result<NpsData, String> {
+    // Download the .osu file content
+    let client = reqwest::Client::new();
+    let response = client.get(&beatmap_url).send().await
+        .map_err(|e| format!("Failed to download: {}", e))?;
 
-    // Modifier les noms des difficultés
-    for (i, beatmap_info) in beatmap.beatmaps.iter_mut().enumerate() {
-        beatmap_info.name = format!("Diff {} - {}", counter, i + 1);
+    if !response.status().is_success() {
+        return Err(format!("HTTP error: {}", response.status()));
     }
 
-    // Émettre l'événement via le module beatmap_update
-    emit_beatmap_changed(&app_handle, beatmap);
+    let osu_content = response.text().await
+        .map_err(|e| format!("Failed to read content: {}", e))?;
 
-    Ok(())
+    // Parse the beatmap
+    let parsed_beatmap = RmBeatmap::from_str(&osu_content)
+        .map_err(|e| format!("Failed to parse beatmap: {}", e))?;
+
+    // Calculate NPS
+    let (nps_graph, drain_time) = calculate_nps_graph(&parsed_beatmap);
+
+    Ok(NpsData {
+        nps_graph,
+        drain_time,
+    })
 }
 
 

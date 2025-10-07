@@ -14,6 +14,8 @@ interface BeatmapDetailProps {
   ratingType: string
   onRatingTypeChange: (value: string) => void
   showDownloadButton?: boolean
+  showEditButton?: boolean
+  npsData?: { nps_graph: number[]; drain_time: number } | null
   className?: string
 }
 
@@ -29,6 +31,8 @@ const BeatmapDetail: React.FC<BeatmapDetailProps> = ({
   ratingType,
   onRatingTypeChange,
   showDownloadButton = true,
+  showEditButton = true,
+  npsData,
   className = '',
 }) => {
   return (
@@ -51,6 +55,8 @@ const BeatmapDetail: React.FC<BeatmapDetailProps> = ({
           onCentirateChange={onCentirateChange}
           ratingType={ratingType}
           onRatingTypeChange={onRatingTypeChange}
+          showEditButton={showEditButton}
+          npsData={npsData}
         />
       </div>
     </div>

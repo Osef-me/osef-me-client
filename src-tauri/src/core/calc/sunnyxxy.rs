@@ -1,5 +1,5 @@
-use crate::calc::etterna::{rating_new, Proportion};
-use crate::models::react::Rating;
+use super::etterna::{rating_new, Proportion};
+use crate::core::react::Rating;
 
 pub fn create_sunny_rating(osu_map: &str, proportions: &Proportion) -> Rating {
     let sunny_rating_value = get_sunnyxxy_rating(osu_map);

@@ -1,4 +1,4 @@
-pub mod download;
-pub mod connection;
 pub mod beatmap;
-pub mod settings;
+pub mod connection;
+pub mod preferences;
+pub mod download;

@@ -1,5 +1,5 @@
-use crate::calc::etterna::{rating_new, Proportion};
-use crate::models::react::Rating;
+use super::etterna::{rating_new, Proportion};
+use crate::core::react::Rating;
 use std::str::FromStr;
 
 pub fn create_osu_rating(osu_map: &str, proportions: &Proportion) -> Rating {

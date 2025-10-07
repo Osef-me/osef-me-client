@@ -20,8 +20,6 @@ pub fn emit_status(app_handle: &AppHandle) {
         .map(|manager| manager.values().cloned().collect())
         .unwrap_or_default();
 
-    println!("📡 Emitting download status: {} items", status_list.len());
-    
     let _ = app_handle.emit("download-status-update", status_list);
 }
 

@@ -1,4 +1,4 @@
-use crate::models::react::{Beatmapset, BeatmapInfo as BeatmapInfoModel};
+use crate::core::react::{Beatmapset, BeatmapInfo as BeatmapInfoModel};
 use rosu_memory_lib::reader::beatmap::common::BeatmapInfo;
 use std::fs;
 use base64::{Engine as _, engine::general_purpose};

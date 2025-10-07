@@ -1,5 +1,5 @@
-use crate::beatmap::monitoring::{beatmap_monitoring_loop, CurrentBeatmapWithRates};
-use crate::init_loop::init_loop;
+use crate::core::beatmap::monitoring::{beatmap_monitoring_loop, CurrentBeatmapWithRates};
+use super::init_loop;
 use super::helpers::{emit_status, is_osu_not_running_error};
 use super::types::ConnectionStatus;
 use minacalc_rs::Calc;

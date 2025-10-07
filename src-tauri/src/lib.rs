@@ -1,11 +1,9 @@
-mod models;
-mod beatmap;
-mod calc;
-mod init_loop;
+mod core;   
 mod commands;
 
-use beatmap::monitoring::CurrentBeatmapWithRates;
-use commands::connection::monitoring::start_monitoring;
+
+use core::beatmap::monitoring::CurrentBeatmapWithRates;
+use core::connection::monitoring::start_monitoring;
 use tauri::{AppHandle, Manager};
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -40,13 +38,14 @@ pub fn run() {
             crate::commands::beatmap::get_all_rates,
             crate::commands::beatmap::apply_beatmap_modifications,
             crate::commands::beatmap::emit_demo_beatmap,
+            crate::commands::beatmap::calculate_nps_from_beatmap_url,
             crate::commands::connection::restart_osu_connection,
             crate::commands::download::download_beatmap_from_url,
             crate::commands::download::test_download_event,
-            crate::commands::settings::get_songs_path,
-            crate::commands::settings::set_songs_path,
-            crate::commands::settings::get_theme,
-            crate::commands::settings::set_theme
+            crate::commands::preferences::get_songs_path,
+            crate::commands::preferences::set_songs_path,
+            crate::commands::preferences::get_theme,
+            crate::commands::preferences::set_theme
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

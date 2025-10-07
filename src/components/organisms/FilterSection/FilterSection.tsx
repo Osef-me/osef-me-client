@@ -83,37 +83,53 @@ const FilterSection: React.FC<FilterSectionProps> = ({ value, onChange, classNam
   const dropdown = useDropdown()
   const filterState = useFilterState({
     onBlockAdd: (kind) => {
-      // Clear corresponding values when adding blocks
+      // Initialize default values for the new filter block
       switch (kind) {
         case 'rating':
-          update({ rating: undefined })
+          if (!value.rating) {
+            update({ rating: { rating_type: '', rating_min: null, rating_max: undefined } })
+          }
           break
         case 'skillset':
-          update({ skillset: undefined })
+          if (!value.skillset) {
+            update({ skillset: { pattern_type: undefined, pattern_min: null, pattern_max: undefined } })
+          }
           break
         case 'bpm':
-          update({ beatmap: { ...value.beatmap, bpm_min: undefined, bpm_max: undefined } })
+          if (!value.beatmap?.bpm_min && !value.beatmap?.bpm_max) {
+            update({ beatmap: { ...value.beatmap, bpm_min: undefined, bpm_max: undefined } })
+          }
           break
         case 'total_time':
-          update({
-            beatmap: { ...value.beatmap, total_time_min: undefined, total_time_max: undefined },
-          })
+          if (!value.beatmap?.total_time_min && !value.beatmap?.total_time_max) {
+            update({
+              beatmap: { ...value.beatmap, total_time_min: undefined, total_time_max: undefined },
+            })
+          }
           break
         case 'search_term':
-          update({ beatmap: { ...value.beatmap, search_term: undefined } })
+          if (!value.beatmap?.search_term) {
+            update({ beatmap: { ...value.beatmap, search_term: '' } })
+          }
           break
         case 'technical_od':
-          update({
-            beatmap_technical: { ...value.beatmap_technical, od_min: undefined, od_max: undefined },
-          })
+          if (!value.beatmap_technical?.od_min && !value.beatmap_technical?.od_max) {
+            update({
+              beatmap_technical: { ...value.beatmap_technical, od_min: undefined, od_max: undefined },
+            })
+          }
           break
         case 'technical_status':
-          update({ beatmap_technical: { ...value.beatmap_technical, status: undefined } })
+          if (!value.beatmap_technical?.status) {
+            update({ beatmap_technical: { ...value.beatmap_technical, status: undefined } })
+          }
           break
         case 'drain':
-          update({
-            rates: { ...value.rates, drain_time_min: undefined, drain_time_max: undefined },
-          })
+          if (!value.rates?.drain_time_min && !value.rates?.drain_time_max) {
+            update({
+              rates: { ...value.rates, drain_time_min: undefined, drain_time_max: undefined },
+            })
+          }
           break
       }
     },

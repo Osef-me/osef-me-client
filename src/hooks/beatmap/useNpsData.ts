@@ -1,23 +1,38 @@
-import { useEffect, useState } from 'react'
-import { listen } from '@tauri-apps/api/event'
+import { useState, useCallback } from 'react'
+import { invoke } from '@tauri-apps/api/core'
 import type { NpsData } from '@/types/beatmap/detail'
 
 export const useNpsData = () => {
   const [npsData, setNpsData] = useState<NpsData | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    // Écouter l'événement nps-calculated
-    const unlisten = listen<NpsData>('nps-calculated', (event) => {
-      console.log('✅ NPS reçu du backend:', event.payload.nps_graph.length, 'sections, drain_time=', event.payload.drain_time)
-      setNpsData(event.payload)
-    })
+  const calculateNps = useCallback(async (beatmapUrl: string) => {
+    if (!beatmapUrl) {
+      return
+    }
 
-    // Nettoyer le listener au démontage
-    return () => {
-      unlisten.then((fn) => fn())
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await invoke<NpsData>('calculate_nps_from_beatmap_url', {
+        beatmapUrl
+      })
+      setNpsData(data)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to calculate NPS'
+      setError(errorMessage)
+    } finally {
+      setLoading(false)
     }
   }, [])
 
-  return npsData
+  return {
+    npsData,
+    loading,
+    error,
+    calculateNps
+  }
 }
 

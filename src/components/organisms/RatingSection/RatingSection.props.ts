@@ -8,5 +8,7 @@ export interface RatingSectionProps {
   onCentirateChange: (centirate: number) => void
   ratingType: string
   onRatingTypeChange: (ratingType: string) => void
+  showEditButton?: boolean
+  npsData?: { nps_graph: number[]; drain_time: number } | null
   className?: string
 }

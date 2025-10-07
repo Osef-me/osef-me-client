@@ -2,17 +2,16 @@ pub(crate) mod helpers;
 pub(crate) mod monitoring;
 mod types;
 
-use crate::beatmap::monitoring::CurrentBeatmapWithRates;
+pub use init_loop::init_loop;
 use helpers::emit_status;
 use monitoring::start_monitoring;
 use tauri::{AppHandle, Manager};
 pub use types::ConnectionStatus;
+mod init_loop;
 
-/// Command to restart the osu! monitoring connection
-#[tauri::command]
-pub async fn restart_osu_connection(app_handle: AppHandle) -> Result<String, String> {
-    println!("🔄 Restarting osu! connection...");
+use crate::core::beatmap::monitoring::CurrentBeatmapWithRates;
 
+pub async fn restart_osu_connection(app_handle: AppHandle) -> Result<(), String> {
     // Emit reconnecting status
     emit_status(&app_handle, ConnectionStatus::reconnecting());
 
@@ -23,7 +22,7 @@ pub async fn restart_osu_connection(app_handle: AppHandle) -> Result<String, Str
     // Spawn monitoring thread
     spawn_monitoring_thread(app_handle, current_beatmap_clone);
 
-    Ok("Reconnection started".to_string())
+    Ok(())
 }
 
 /// Spawn a new thread for osu! monitoring

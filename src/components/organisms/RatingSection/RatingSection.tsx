@@ -16,10 +16,15 @@ const RatingSection: React.FC<RatingSectionProps> = ({
   onCentirateChange,
   ratingType,
   onRatingTypeChange,
+  showEditButton = true,
+  npsData: externalNpsData,
   className = '',
 }) => {
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false)
-  const npsData = useNpsData()
+  const internalNpsData = useNpsData()
+
+  // Use external NPS data if provided, otherwise use internal hook data
+  const npsData = externalNpsData || internalNpsData
   const findBestRating = (requestedType: string) => {
     const ratings = rates?.rating || []
     const defaultTypes = ['etterna', 'osu', 'overall']
@@ -130,13 +135,15 @@ const RatingSection: React.FC<RatingSectionProps> = ({
             <div className="flex-1">
               <NpsGraph npsData={npsData?.nps_graph || []} />
               <div className="mt-4 flex justify-center">
-                <Button
-                  onClick={() => setIsEditPanelOpen(true)}
-                  color="primary"
-                  style="outline"
-                >
-                  Edit Beatmap
-                </Button>
+                {showEditButton && (
+                  <Button
+                    onClick={() => setIsEditPanelOpen(true)}
+                    color="primary"
+                    style="outline"
+                  >
+                    Edit Beatmap
+                  </Button>
+                )}
               </div>
             </div>
           </div>

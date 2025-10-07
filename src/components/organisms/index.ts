@@ -7,3 +7,6 @@ export { default as BeatmapsetHeader } from './BeatmapsetHeader/BeatmapsetHeader
 export { default as FilterSection } from './FilterSection/FilterSection'
 export { default as RatingSection } from './RatingSection/RatingSection'
 export { default as ThemeManager } from './ThemeManager/ThemeManager'
+export { default as CurrentBeatmapDetail } from './BeatmapDetail/CurrentBeatmapDetail'
+export { default as RemoteBeatmapDetail } from './BeatmapDetail/RemoteBeatmapDetail'
+export { default as DownloadPanel } from './DownloadPanel/DownloadPanel'
