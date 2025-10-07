@@ -10,6 +10,7 @@ const ListPage: React.FC = () => {
 
   const {
     data: items,
+    total,
     loading,
     error,
     currentPage,
@@ -80,7 +81,7 @@ const ListPage: React.FC = () => {
                   Page {currentPage + 1} of {totalPages}
                 </span>
                 <span className="text-sm text-base-content/50">
-                  ({items.length} results)
+                  ({total} results)
                 </span>
               </div>
 
