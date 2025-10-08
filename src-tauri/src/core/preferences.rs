@@ -1,6 +1,6 @@
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
@@ -41,8 +41,8 @@ pub fn load_config() -> AppConfig {
 
 pub fn save_config(config: &AppConfig) -> Result<(), String> {
     let config_path = get_config_path();
-    let toml_string = toml::to_string_pretty(config)
-        .map_err(|e| format!("Failed to serialize config: {}", e))?;
+    let toml_string =
+        toml::to_string_pretty(config).map_err(|e| format!("Failed to serialize config: {}", e))?;
     fs::write(&config_path, toml_string)
         .map_err(|e| format!("Failed to write config file: {}", e))?;
     Ok(())

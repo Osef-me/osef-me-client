@@ -1,11 +1,11 @@
-mod core;   
 mod commands;
-
+mod core;
 
 use core::beatmap::monitoring::CurrentBeatmapWithRates;
+use core::internal::CurrentBeatmapData;
 use core::connection::monitoring::start_monitoring;
-use tauri::{AppHandle, Manager};
 use std::sync::Arc;
+use tauri::{AppHandle, Manager};
 use tokio::sync::Mutex;
 
 /// Spawn initial monitoring thread on app startup
@@ -23,19 +23,24 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Initialiser le CurrentBeatmapWithRates state
-            let current_beatmap: CurrentBeatmapWithRates = Arc::new(Mutex::new(None));
+            let current_beatmap: CurrentBeatmapWithRates = Arc::new(Mutex::new(CurrentBeatmapData {
+                beatmap_info: None,
+                rates: Vec::new(),
+                nps_data: None,
+            }));
             app.manage(current_beatmap.clone());
-            
+
             println!("✅ App initialized");
-            
+
             // Start monitoring in background
             spawn_initial_monitoring(app.handle().clone(), current_beatmap);
-            
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             crate::commands::beatmap::get_current_beatmap,
             crate::commands::beatmap::get_all_rates,
+            crate::commands::beatmap::get_current_nps,
             crate::commands::beatmap::apply_beatmap_modifications,
             crate::commands::beatmap::emit_demo_beatmap,
             crate::commands::beatmap::calculate_nps_from_beatmap_url,

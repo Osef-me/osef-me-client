@@ -1,14 +1,13 @@
-import type React from 'react'
 import { useState } from 'react'
+import type { FC } from 'react'
 import { ManiaRadarChart, RatingValue } from '@/components/atoms'
 import { NpsGraph } from '@/components/atoms/display/NpsGraph'
 import { Button } from '@/components/atoms'
 import { RatingControls } from '@/components/molecules'
 import { BeatmapEditPanel } from '@/components/organisms/BeatmapEditPanel'
-import { useNpsData } from '@/hooks/beatmap'
 import type { RatingSectionProps } from './RatingSection.props'
 
-const RatingSection: React.FC<RatingSectionProps> = ({
+const RatingSection: FC<RatingSectionProps> = ({
   rates,
   loading = false,
   error,
@@ -21,10 +20,10 @@ const RatingSection: React.FC<RatingSectionProps> = ({
   className = '',
 }) => {
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false)
-  const internalNpsData = useNpsData()
 
-  // Use external NPS data if provided, otherwise use internal hook data
-  const npsData = externalNpsData || internalNpsData
+  // Use external NPS data if provided, otherwise default to null
+  const npsData = externalNpsData || null
+
   const findBestRating = (requestedType: string) => {
     const ratings = rates?.rating || []
     const defaultTypes = ['etterna', 'osu', 'overall']
@@ -81,7 +80,7 @@ const RatingSection: React.FC<RatingSectionProps> = ({
     )
   }
 
-  if (!rates && loading) {
+  if (loading && !rates) {
     return (
       <div className={`flex justify-center items-center py-8 ${className}`}>
         <span className="loading loading-spinner loading-lg"></span>
@@ -125,35 +124,34 @@ const RatingSection: React.FC<RatingSectionProps> = ({
         </div>
       )}
 
-      {maniaRatings && !loading && (
-        <div className="mt-6">
-          {/* Radar Chart and NPS Graph side by side */}
-          <div className="flex flex-col lg:flex-row gap-6 mb-6">
-            <div className="flex-1">
-              <ManiaRadarChart maniaRating={maniaRatings} overallRating={ratingValue} />
-            </div>
-            <div className="flex-1">
-              <NpsGraph npsData={npsData?.nps_graph || []} />
-              <div className="mt-4 flex justify-center">
-                {showEditButton && (
-                  <Button
-                    onClick={() => setIsEditPanelOpen(true)}
-                    color="primary"
-                    style="outline"
-                  >
-                    Edit Beatmap
-                  </Button>
-                )}
-              </div>
+      <div className="mt-6 flex flex-col lg:flex-row gap-6 mb-6">
+        {maniaRatings && !loading && (
+          <div className="flex-1">
+            <ManiaRadarChart maniaRating={maniaRatings} overallRating={ratingValue} />
+          </div>
+        )}
+
+        {npsData && Array.isArray(npsData.nps_graph) && npsData.nps_graph.length > 0 && (
+          <div className="flex-1">
+            <NpsGraph npsData={npsData.nps_graph} />
+            <div className="mt-4 flex justify-center">
+              {showEditButton && (
+                <Button
+                  onClick={() => setIsEditPanelOpen(true)}
+                  color="primary"
+                  style="outline"
+                >
+                  Edit Beatmap
+                </Button>
+              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <BeatmapEditPanel
         isOpen={isEditPanelOpen}
         onClose={() => setIsEditPanelOpen(false)}
-        beatmapOsuId={rates?.id}
         initialOd={rates?.rating[0]?.rating}
         initialHp={rates?.rating[0]?.rating}
       />

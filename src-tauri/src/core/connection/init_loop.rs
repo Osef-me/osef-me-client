@@ -1,11 +1,10 @@
+use rosu_mem::process::{Process, ProcessTraits};
 use rosu_memory_lib::reader::structs::State;
 use rosu_memory_lib::reader::structs::StaticAddresses;
-use rosu_mem::process::{Process, ProcessTraits};
 use rosu_memory_lib::Error;
 use std::time::Duration;
 
 static EXCLUDE_WORDS: [&str; 2] = ["umu-run", "waitforexitandrun"];
-
 
 #[allow(dead_code)]
 pub fn init_loop(sleep_duration: u64) -> Result<(State, Process), Error> {

@@ -19,5 +19,3 @@ pub fn get_theme() -> Result<String, String> {
 pub fn set_theme(theme: String) -> Result<(), String> {
     preferences::set_theme(theme)
 }
-
-

@@ -12,7 +12,7 @@ pub async fn stream_download(
     app_handle: &AppHandle,
 ) -> Result<Vec<u8>, String> {
     let total_size = response.content_length().unwrap_or(0);
-    
+
     // Update total size
     update_status(beatmapset_id, |status| {
         status.total_bytes = Some(total_size);
@@ -25,12 +25,12 @@ pub async fn stream_download(
 
     while let Some(chunk_result) = stream.next().await {
         let chunk = chunk_result.map_err(|e| format!("Stream error: {}", e))?;
-        
+
         downloaded += chunk.len() as u64;
         buffer.extend_from_slice(&chunk);
 
         let progress = calculate_progress(downloaded, total_size);
-        
+
         update_status(beatmapset_id, |status| {
             status.downloaded_bytes = downloaded;
             status.progress = progress;
@@ -48,4 +48,3 @@ pub async fn stream_download(
 fn should_emit_update(downloaded: u64, total: u64, chunk_size: u64) -> bool {
     downloaded % PROGRESS_UPDATE_INTERVAL < chunk_size || downloaded == total
 }
-

@@ -7,7 +7,6 @@ import type { Beatmapset } from '@/types/beatmap/detail'
 interface BeatmapEditPanelProps {
   isOpen: boolean
   onClose: () => void
-  beatmapOsuId?: number
   initialOd?: number
   initialHp?: number
 }
@@ -24,7 +23,6 @@ export interface BeatmapModifications {
 const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
   isOpen,
   onClose,
-  beatmapOsuId,
   initialOd = 8,
   initialHp = 8,
 }) => {
@@ -42,11 +40,6 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
   const [error, setError] = useState<string | null>(null)
 
   const handleApply = async () => {
-    if (!beatmapOsuId) {
-      setError('No beatmap selected')
-      return
-    }
-
     const modifications: BeatmapModifications = {
       od,
       hp,
@@ -62,7 +55,6 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
       setLoading(true)
       setError(null)
       const modifiedBeatmap = await invoke<Beatmapset>('apply_beatmap_modifications', {
-        beatmapOsuId,
         modifications,
       })
       console.log('Modified beatmap:', modifiedBeatmap)
@@ -165,10 +157,9 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
                   <Input
                     id={lnGapId}
                     type="number"
-                    value={lnGapMs}
-                    onChange={(e) => setLnGapMs(parseInt(e.target.value, 10))}
-                    min={0}
-                    step={5}
+                    value={lnGapMs.toString()}
+                    onChange={(value) => setLnGapMs(parseInt(value, 10))}
+                    placeholder="75"
                     className="w-full"
                   />
                 </div>
@@ -180,10 +171,9 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
                   <Input
                     id={lnDistanceId}
                     type="number"
-                    value={lnMinDistanceMs}
-                    onChange={(e) => setLnMinDistanceMs(parseInt(e.target.value, 10))}
-                    min={0}
-                    step={5}
+                    value={lnMinDistanceMs.toString()}
+                    onChange={(value) => setLnMinDistanceMs(parseInt(value, 10))}
+                    placeholder="40"
                     className="w-full"
                   />
                 </div>

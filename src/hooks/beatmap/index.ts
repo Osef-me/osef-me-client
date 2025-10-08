@@ -6,6 +6,7 @@ export { useRates } from './useRates'
 export { useCurrentBeatmap } from './useCurrentBeatmap'
 export { useCurrentRates } from './useCurrentRates'
 export { useNpsData } from './useNpsData'
+export { useCurrentNps } from './useCurrentNps'
 export { useBeatmaps } from './useBeatmaps'
 export { useBeatmapFilters } from './useBeatmapFilters'
 

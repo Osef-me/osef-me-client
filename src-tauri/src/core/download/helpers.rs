@@ -54,4 +54,3 @@ pub fn calculate_progress(downloaded: u64, total: u64) -> f32 {
 pub fn format_mb(bytes: u64) -> f64 {
     bytes as f64 / (1024.0 * 1024.0)
 }
-

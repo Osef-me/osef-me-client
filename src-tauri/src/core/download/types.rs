@@ -41,4 +41,3 @@ lazy_static! {
     pub static ref DOWNLOAD_MANAGER: DownloadManager = Arc::new(Mutex::new(HashMap::new()));
     pub static ref DOWNLOAD_SEMAPHORE: Semaphore = Semaphore::new(5);
 }
-

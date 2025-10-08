@@ -12,12 +12,10 @@ pub fn create_sunny_rating(osu_map: &str, proportions: &Proportion) -> Rating {
 
 pub fn get_sunnyxxy_rating(osu_map: &str) -> f64 {
     match ssrrr::preprocess(osu_map, "None") {
-        Ok(preprocess) => {
-            match ssrrr::algorithm::process::process::calculate(&preprocess) {
-                Ok(result) => result.rating,
-                Err(_) => 0.0,
-            }
-        }
+        Ok(preprocess) => match ssrrr::algorithm::process::process::calculate(&preprocess) {
+            Ok(result) => result.rating,
+            Err(_) => 0.0,
+        },
         Err(_) => 0.0,
     }
 }

@@ -49,8 +49,6 @@ const BeatmapDetail: React.FC<BeatmapDetailProps> = ({
       <div className="mt-8">
         <RatingSection
           rates={rates}
-          loading={ratesLoading}
-          error={ratesError ?? null}
           centirate={centirate}
           onCentirateChange={onCentirateChange}
           ratingType={ratingType}

@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::rating_info::RatingInfo;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BeatmapInfo {

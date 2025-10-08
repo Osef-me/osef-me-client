@@ -1,4 +1,4 @@
-use crate::core::react::Rates;
+use crate::core::react::{NpsData, Rates};
 use rosu_memory_lib::reader::beatmap::common::BeatmapInfo;
 
 #[derive(Debug, Clone)]
@@ -14,4 +14,11 @@ impl BeatmapWithRates {
             rates: Vec::new(),
         }
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct CurrentBeatmapData {
+    pub beatmap_info: Option<BeatmapInfo>,
+    pub rates: Vec<Rates>,
+    pub nps_data: Option<NpsData>,
 }

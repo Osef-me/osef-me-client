@@ -2,8 +2,8 @@ pub(crate) mod helpers;
 pub(crate) mod monitoring;
 mod types;
 
-pub use init_loop::init_loop;
 use helpers::emit_status;
+pub use init_loop::init_loop;
 use monitoring::start_monitoring;
 use tauri::{AppHandle, Manager};
 pub use types::ConnectionStatus;
@@ -33,4 +33,3 @@ fn spawn_monitoring_thread(app_handle: AppHandle, current_beatmap: CurrentBeatma
         });
     });
 }
-

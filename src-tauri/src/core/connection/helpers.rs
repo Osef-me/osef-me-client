@@ -4,7 +4,7 @@ use tauri::{AppHandle, Emitter};
 /// Emit connection status to frontend
 pub(crate) fn emit_status(app_handle: &AppHandle, status: ConnectionStatus) {
     let is_connected = status.connected;
-    
+
     if let Err(e) = app_handle.emit("connection-status", status) {
         eprintln!("❌ Error emitting connection status: {}", e);
         return;
@@ -24,4 +24,3 @@ pub fn is_osu_not_running_error(error: &str) -> bool {
         || error.contains("Access denied")
         || error.contains("could not find osu process")
 }
-

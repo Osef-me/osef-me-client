@@ -1,7 +1,7 @@
-use crate::core::beatmap::monitoring::{beatmap_monitoring_loop, CurrentBeatmapWithRates};
-use super::init_loop;
 use super::helpers::{emit_status, is_osu_not_running_error};
+use super::init_loop;
 use super::types::ConnectionStatus;
+use crate::core::beatmap::monitoring::{beatmap_monitoring_loop, CurrentBeatmapWithRates};
 use minacalc_rs::Calc;
 use tauri::AppHandle;
 
@@ -45,8 +45,11 @@ pub(crate) async fn start_monitoring(
 fn handle_init_error(app_handle: &AppHandle, error: rosu_memory_lib::Error) {
     let error_msg = error.to_string();
     eprintln!("❌ Initialization error: {}", error_msg);
-    
-    emit_status(app_handle, ConnectionStatus::disconnected(error_msg.clone()));
+
+    emit_status(
+        app_handle,
+        ConnectionStatus::disconnected(error_msg.clone()),
+    );
 
     if is_osu_not_running_error(&error_msg) {
         println!("⚠️ Osu! not running - monitoring stopped");
@@ -54,4 +57,3 @@ fn handle_init_error(app_handle: &AppHandle, error: rosu_memory_lib::Error) {
         println!("⚠️ Unknown initialization error - monitoring stopped");
     }
 }
-

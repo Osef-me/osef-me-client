@@ -31,7 +31,7 @@ const RemoteBeatmapDetail: React.FC = () => {
     error: ratesError,
   } = useRates(beatmapOsuId ? parseInt(beatmapOsuId, 10) : undefined, centirate)
 
-  const { npsData, calculateNps } = useNpsData()
+  const { npsData } = useNpsData()
 
   const { currentBeatmap, navigateToBeatmap } = useBeatmapNavigation(
     beatmapset,
@@ -43,13 +43,7 @@ const RemoteBeatmapDetail: React.FC = () => {
     }
   )
 
-  // Calculate NPS automatically when beatmap loads
-  useEffect(() => {
-    if (currentBeatmap) {
-      const osuUrl = `https://osu.ppy.sh/osu/${currentBeatmap.beatmap_osu_id}`
-      calculateNps(osuUrl)
-    }
-  }, [currentBeatmap, calculateNps])
+  // No fallback: rely solely on 'nps-calculated' event
 
   const handleBeatmapChange = useCallback(
     (beatmap: BeatmapInfo) => {

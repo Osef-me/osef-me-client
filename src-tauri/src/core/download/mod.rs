@@ -3,7 +3,7 @@ mod http;
 mod stream;
 mod types;
 
-use crate::core::preferences as preferences;
+use crate::core::preferences;
 use helpers::{emit_status, mark_completed, mark_failed, update_status};
 use http::fetch_beatmap;
 use std::fs;
@@ -13,20 +13,24 @@ use tauri::AppHandle;
 use types::{DownloadState, DownloadStatus, DOWNLOAD_MANAGER, DOWNLOAD_SEMAPHORE};
 
 /// Test download event for debugging (core)
-pub async fn test_download_event(app_handle: AppHandle, beatmapset_id: i32) -> Result<String, String> {
-    
-
+pub async fn test_download_event(
+    app_handle: AppHandle,
+    beatmapset_id: i32,
+) -> Result<String, String> {
     if let Ok(mut manager) = DOWNLOAD_MANAGER.lock() {
-        manager.insert(beatmapset_id, DownloadStatus {
+        manager.insert(
             beatmapset_id,
-            filename: format!("test_{}.osz", beatmapset_id),
-            display_name: "Test Beatmap by Test Creator".to_string(),
-            status: DownloadState::Downloading,
-            progress: 50.0,
-            error: None,
-            downloaded_bytes: 512000,
-            total_bytes: Some(1024000),
-        });
+            DownloadStatus {
+                beatmapset_id,
+                filename: format!("test_{}.osz", beatmapset_id),
+                display_name: "Test Beatmap by Test Creator".to_string(),
+                status: DownloadState::Downloading,
+                progress: 50.0,
+                error: None,
+                downloaded_bytes: 512000,
+                total_bytes: Some(1024000),
+            },
+        );
     }
 
     emit_status(&app_handle);
@@ -51,7 +55,7 @@ pub async fn download_beatmap_from_url(
     // Start download in background
     tauri::async_runtime::spawn(async move {
         let result = download_beatmap(app_handle.clone(), beatmapset_id, url, filename).await;
-        
+
         if let Err(e) = result {
             eprintln!("❌ Download failed for beatmap {}: {}", beatmapset_id, e);
         }
@@ -94,12 +98,10 @@ async fn download_beatmap(
     url: String,
     filename: String,
 ) -> Result<(), String> {
-    
-
     // Load config and prepare paths
     let songs_path = get_songs_path()?;
     ensure_directory_exists(&songs_path)?;
-    
+
     let file_path = songs_path.join(&filename);
 
     // Update status to downloading
@@ -132,10 +134,8 @@ async fn download_beatmap(
         e
     })?;
 
-    
-    
     mark_completed(&app_handle, beatmapset_id);
-    
+
     Ok(())
 }
 
@@ -143,22 +143,19 @@ async fn download_beatmap(
 fn get_songs_path() -> Result<PathBuf, String> {
     let config = std::panic::catch_unwind(preferences::load_config)
         .map_err(|_| "Failed to load config".to_string())?;
-    
+
     Ok(PathBuf::from(&config.songs_path))
 }
 
 /// Ensure directory exists
 fn ensure_directory_exists(path: &PathBuf) -> Result<(), String> {
     if !path.exists() {
-        fs::create_dir_all(path)
-            .map_err(|e| format!("Failed to create directory: {}", e))?;
+        fs::create_dir_all(path).map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     Ok(())
 }
 
 /// Save buffer to file
 fn save_file(path: &PathBuf, data: &[u8]) -> Result<(), String> {
-    fs::write(path, data)
-        .map_err(|e| format!("Failed to save file: {}", e))
+    fs::write(path, data).map_err(|e| format!("Failed to save file: {}", e))
 }
-

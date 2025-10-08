@@ -1,12 +1,7 @@
-import type React from 'react'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import { invoke } from '@tauri-apps/api/core'
 import { CurrentBeatmapDetail } from '@/components/organisms'
-
-// Connection status interface
-interface ConnectionStatus {
-  connected: boolean
-  error?: string
-}
+import { useTauriEvents } from '@/context/TauriEventProvider'
 
 // Context for current beatmap page state
 interface CurrentBeatmapContextType {
@@ -14,15 +9,14 @@ interface CurrentBeatmapContextType {
   setCentirate: (value: number) => void
   ratingType: string
   setRatingType: (value: string) => void
-  connectionStatus: ConnectionStatus
-  setConnectionStatus: (status: ConnectionStatus) => void
+  connectionStatus: { connected: boolean; error?: string }
   reconnect: () => Promise<void>
 }
 
-const CurrentBeatmapContext = createContext<CurrentBeatmapContextType | null>(null)
+const CurrentBeatmapContext = React.createContext<CurrentBeatmapContextType | null>(null)
 
 export const useCurrentBeatmapContext = () => {
-  const context = useContext(CurrentBeatmapContext)
+  const context = React.useContext(CurrentBeatmapContext)
   if (!context) {
     throw new Error('useCurrentBeatmapContext must be used within CurrentBeatmapProvider')
   }
@@ -32,38 +26,17 @@ export const useCurrentBeatmapContext = () => {
 const CurrentPage: React.FC = () => {
   const [centirate, setCentirate] = useState(100)
   const [ratingType, setRatingType] = useState('overall')
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
-    connected: false,
-    error: undefined
-  })
+
+  // Get data from global Tauri event provider
+  const { connectionStatus, currentRates, currentNpsData, currentBeatmapset } = useTauriEvents()
 
   // Handle reconnection
-  const reconnect = useCallback(async () => {
+  const reconnect = React.useCallback(async () => {
     try {
-      setConnectionStatus({ connected: false, error: 'Reconnecting...' })
       await invoke('restart_osu_connection')
-      // The connection status will be updated via the event listener
+      // The connection status will be updated via the global event listener
     } catch (error) {
       console.error('Failed to restart connection:', error)
-      setConnectionStatus({
-        connected: false,
-        error: error instanceof Error ? error.message : 'Failed to reconnect'
-      })
-    }
-  }, [])
-
-  // Listen for connection status events from backend (only in Tauri environment)
-  useEffect(() => {
-    // Check if we're in Tauri environment
-    if (typeof window !== 'undefined' && window.__TAURI__) {
-      const unlisten = listen('connection-status', (event) => {
-        const status: ConnectionStatus = event.payload as ConnectionStatus
-        setConnectionStatus(status)
-      })
-
-      return () => {
-        unlisten.then(fn => fn())
-      }
     }
   }, [])
 
@@ -76,7 +49,6 @@ const CurrentPage: React.FC = () => {
           ratingType,
           setRatingType,
           connectionStatus,
-          setConnectionStatus,
           reconnect,
         }}
       >

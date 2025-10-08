@@ -1,8 +1,8 @@
 use super::osu::get_star_rating;
 use crate::core::react::{ManiaRating, ModeRating, Rates, Rating};
 use anyhow::Result;
+use minacalc_rs::{hashmap::HashMapCalcExt, Calc, OsuCalcExt, Ssr};
 use rosu_map::Beatmap as RmBeatmap;
-use minacalc_rs::{hashmap::HashMapCalcExt, OsuCalcExt, Calc, Ssr};
 use std::fs;
 use std::str::FromStr;
 

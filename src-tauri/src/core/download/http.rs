@@ -10,7 +10,7 @@ pub fn create_client() -> Client {
 /// Download file from URL
 pub async fn fetch_beatmap(url: &str) -> Result<Response, String> {
     let client = create_client();
-    
+
     let response = client
         .get(url)
         .header("User-Agent", USER_AGENT)
@@ -25,4 +25,3 @@ pub async fn fetch_beatmap(url: &str) -> Result<Response, String> {
 
     Ok(response)
 }
-
