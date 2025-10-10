@@ -6,3 +6,4 @@ pub mod internal;
 pub mod preferences;
 pub mod react;
 pub mod edit;
+pub mod packmaker;

@@ -3,6 +3,7 @@ mod core;
 
 use core::beatmap::monitoring::CurrentBeatmapWithRates;
 use core::internal::CurrentBeatmapData;
+use core::packmaker::{SharedPackMaker, PackMaker};
 use core::connection::monitoring::start_monitoring;
 use std::sync::Arc;
 use tauri::{AppHandle, Manager};
@@ -30,6 +31,10 @@ pub fn run() {
             }));
             app.manage(current_beatmap.clone());
 
+            // Initialize PackMaker state
+            let pack: SharedPackMaker = Arc::new(Mutex::new(PackMaker::new()));
+            app.manage(pack.clone());
+
             println!("✅ App initialized");
 
             // Start monitoring in background
@@ -50,7 +55,10 @@ pub fn run() {
             crate::commands::preferences::get_songs_path,
             crate::commands::preferences::set_songs_path,
             crate::commands::preferences::get_theme,
-            crate::commands::preferences::set_theme
+            crate::commands::preferences::set_theme,
+            crate::commands::packmaker::add_to_pack,
+            crate::commands::packmaker::get_pack,
+            crate::commands::packmaker::update_pack_metadata
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
