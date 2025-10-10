@@ -81,7 +81,6 @@ async fn process_detected_beatmap(
         &osu_path,
         beatmap_info.stats.length as f64,
         beatmap_info.stats.length as f64,
-        180.0 as f32,
     )
     .await
     .map_err(|e| eprintln!("Failed to calculate rates: {}", e));

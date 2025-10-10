@@ -58,6 +58,7 @@ const ManiaRadarChart: React.FC<ManiaRadarChartProps> = ({
   maniaRating,
   overallRating,
   className = '',
+  height = 300,
 }) => {
   if (!maniaRating) {
     return null
@@ -119,7 +120,7 @@ const ManiaRadarChart: React.FC<ManiaRadarChartProps> = ({
 
   return (
     <div className={`${className}`}>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={height}>
         <RadarChart data={data}>
           <PolarGrid stroke="#444" />
           <PolarAngleAxis dataKey="skillset" tick={{ fill: '#fff', fontSize: 12 }} />

@@ -18,3 +18,4 @@ export { default as FilterGrid } from './filters/FilterGrid/FilterGrid'
 // Filter components - FilterSection is in organisms, not molecules
 export { default as FilterSectionHeader } from './filters/FilterSectionHeader/FilterSectionHeader'
 export { default as RatingControls } from './RatingControls/RatingControls'
+export { default as SideMenu } from './SideMenu/SideMenu'

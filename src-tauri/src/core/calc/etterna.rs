@@ -155,12 +155,62 @@ pub fn rating_new(rating_type: String, rating: f64, proportion: Proportion) -> R
     }
 }
 
+
+pub(crate) async fn calc_bpm(rm_beatmap: &RmBeatmap) -> f32 {
+    let timing_points = &rm_beatmap.control_points.timing_points;
+    if timing_points.is_empty() {
+        return 0.0;
+    }
+
+    // Fin de la map: dernier hit object si dispo, sinon dernier timing point
+    let map_end_time = rm_beatmap
+        .hit_objects
+        .last()
+        .map(|o| o.start_time)
+        .unwrap_or_else(|| timing_points.last().map(|tp| tp.time).unwrap_or(0.0));
+
+    // Calculer toutes les durées en une passe
+    let mut durations: Vec<f64> = Vec::with_capacity(timing_points.len());
+    for i in 0..timing_points.len() {
+        let current_time = timing_points[i].time;
+        let next_time = if i + 1 < timing_points.len() {
+            timing_points[i + 1].time
+        } else {
+            map_end_time
+        };
+        let duration = (next_time - current_time).max(0.0);
+        durations.push(duration);
+    }
+
+    // Trouver l'index du timing point avec la durée max
+    let mut max_idx = 0usize;
+    let mut max_duration = durations[0];
+    for (idx, &dur) in durations.iter().enumerate().skip(1) {
+        if dur > max_duration {
+            max_duration = dur;
+            max_idx = idx;
+        }
+    }
+    println!("timings_points: {:?}", timing_points);
+
+    let tp = &timing_points[max_idx];
+    println!(
+        "🧮 Longest timing point idx={}, time={}, duration={}",
+        max_idx, tp.time, max_duration
+    );
+    
+    if tp.beat_len > 0.0 {
+        (60000.0 / tp.beat_len) as f32
+    } else {
+        0.0
+    }
+}
+
 pub(crate) async fn process_beatmap(
     calc: &Calc,
     osu_path: &str,
     seconds_drain: f64,
     seconds_total: f64,
-    bpm: f32,
 ) -> Result<(Vec<Rates>, RmBeatmap)> {
     let osu_map = fs::read_to_string(osu_path).unwrap();
     let parsed_beatmap = RmBeatmap::from_str(&osu_map).unwrap();
@@ -177,7 +227,7 @@ pub(crate) async fn process_beatmap(
             rate: rate_key.clone(),
             drain_time: seconds_drain,
             total_time: seconds_total,
-            bpm: bpm,
+            bpm: calc_bpm(&parsed_beatmap).await,
         };
         let rates: Rates = rates_from_skillset_scores(&mut rates_maker).await.unwrap();
         all_rates.push(rates);

@@ -20,11 +20,15 @@ pub struct PackMetadata {
 pub struct BeatmapData {
     pub beatmap: Beatmapset,
     pub rm_beatmap: Option<RmBeatmap>,
+    pub cover_image: Option<String>, // Base64 encoded image data
+    pub modifications: PackBeatmapModifications, // Modifications en cours (non appliquées)
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PublicBeatmapData {
     pub beatmap: Beatmapset,
+    pub cover_image: Option<String>, // Base64 encoded image data
+    pub modifications: PackBeatmapModifications, // Modifications en cours
 }
 
 #[derive(Debug, Default)]
@@ -62,8 +66,25 @@ pub async fn add_current_to_pack(
     let parsed = RmBeatmap::from_str(&osu_map_string)
         .map_err(|e| format!("Failed to parse osu file: {}", e))?;
     let beatmapset: Beatmapset = serialize_beatmap(&beatmap_info, &songs_path);
+
+    // Save the cover image as base64
+    let cover_image = beatmapset.cover_url.clone();
+
     let mut guard = pack.lock().await;
-    guard.beatmaps.push(BeatmapData { beatmap: beatmapset, rm_beatmap: Some(parsed) });
+    guard.beatmaps.push(BeatmapData {
+        beatmap: beatmapset,
+        rm_beatmap: Some(parsed),
+        cover_image,
+        modifications: PackBeatmapModifications {
+            od: None,
+            hp: None,
+            target_rate: None,
+            ln_mode: None,
+            ln_gap_ms: None,
+            ln_min_distance_ms: None,
+            version_name: None,
+        },
+    });
     Ok(())
 }
 
@@ -73,10 +94,15 @@ pub async fn get_public_pack(pack: &SharedPackMaker) -> (PackMetadata, Vec<Publi
     let list = guard
         .beatmaps
         .iter()
-        .map(|b| PublicBeatmapData { beatmap: b.beatmap.clone() })
+        .map(|b| PublicBeatmapData {
+            beatmap: b.beatmap.clone(),
+            cover_image: b.cover_image.clone(),
+            modifications: b.modifications.clone(),
+        })
         .collect::<Vec<_>>();
     (meta, list)
 }
+
 
 pub async fn update_pack_beatmap_version(
     pack: &SharedPackMaker,
@@ -217,6 +243,66 @@ pub async fn update_pack_beatmap(
     }
 
     Ok(())
+}
+
+/// Met à jour les modifications d'une beatmap sans les appliquer
+pub async fn update_pack_beatmap_modifications(
+    pack: &SharedPackMaker,
+    index: usize,
+    modifications: PackBeatmapModifications,
+) -> Result<(), String> {
+    let mut guard = pack.lock().await;
+    let item = guard
+        .beatmaps
+        .get_mut(index)
+        .ok_or_else(|| "Invalid beatmap index".to_string())?;
+
+    // Mettre à jour les modifications (sans les appliquer)
+    item.modifications = modifications;
+
+    Ok(())
+}
+
+/// Applique toutes les modifications en attente d'une beatmap
+pub async fn apply_pack_beatmap_modifications(
+    pack: &SharedPackMaker,
+    index: usize,
+) -> Result<(), String> {
+    let mut guard = pack.lock().await;
+    let item = guard
+        .beatmaps
+        .get_mut(index)
+        .ok_or_else(|| "Invalid beatmap index".to_string())?;
+
+    // Appliquer les modifications en attente
+    update_pack_beatmap(pack, index, item.modifications.clone()).await?;
+
+    // Réinitialiser les modifications après application
+    item.modifications = PackBeatmapModifications {
+        od: None,
+        hp: None,
+        target_rate: None,
+        ln_mode: None,
+        ln_gap_ms: None,
+        ln_min_distance_ms: None,
+        version_name: None,
+    };
+
+    Ok(())
+}
+
+/// Récupère les modifications en cours d'une beatmap
+pub async fn get_pack_beatmap_modifications(
+    pack: &SharedPackMaker,
+    index: usize,
+) -> Result<PackBeatmapModifications, String> {
+    let guard = pack.lock().await;
+    let item = guard
+        .beatmaps
+        .get(index)
+        .ok_or_else(|| "Invalid beatmap index".to_string())?;
+
+    Ok(item.modifications.clone())
 }
 
 

@@ -4,4 +4,5 @@ export interface ManiaRadarChartProps {
   maniaRating: ManiaRating | null
   overallRating: number | null
   className?: string
+  height?: number
 }

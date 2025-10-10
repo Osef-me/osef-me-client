@@ -1,5 +1,5 @@
 import type React from 'react'
-import { MdHome, MdMusicNote, MdShuffle, MdSettings, MdHelpOutline } from 'react-icons/md'
+import { MdHome, MdMusicNote, MdSettings, MdHelpOutline, MdCreate } from 'react-icons/md'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Logo from '@/assets/logo.svg?react'
 import ThemeManager from '@/components/organisms/ThemeManager/ThemeManager'
@@ -24,6 +24,12 @@ const navItems: NavItem[] = [
     path: '/',
     icon: MdHome,
     matchPath: (pathname) => pathname === '/',
+  },
+  {
+    label: 'Pack Maker',
+    path: '/packmaker',
+    icon: MdCreate,
+    matchPath: (pathname) => pathname === '/packmaker',
   },
   {
     label: 'Help',
