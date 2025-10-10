@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useState, useId } from 'react'
+import { useEffect, useMemo, useState, useId } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { Button, SliderInput, CentirateInput, Select, Input } from '@/components/atoms'
 import type { Beatmapset } from '@/types/beatmap/detail'
@@ -9,6 +9,12 @@ interface BeatmapEditPanelProps {
   onClose: () => void
   initialOd?: number
   initialHp?: number
+  // Current centirate from parent (e.g., 100 for 1.0x)
+  centirate?: number
+  // Update centirate in parent when user changes rate/target BPM
+  onCentirateChange?: (value: number) => void
+  // Base BPM of the selected rate/beatmap (unmodified BPM at current rate)
+  baseBpm?: number | null
 }
 
 export interface BeatmapModifications {
@@ -25,6 +31,9 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
   onClose,
   initialOd = 8,
   initialHp = 8,
+  centirate = 100,
+  onCentirateChange,
+  baseBpm = null,
 }) => {
   const lnModeId = useId()
   const lnGapId = useId()
@@ -32,12 +41,34 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
   
   const [od, setOd] = useState(initialOd)
   const [hp, setHp] = useState(initialHp)
-  const [targetCentirate, setTargetCentirate] = useState(100) // 1.0 * 100
+  const [targetCentirate, setTargetCentirate] = useState(centirate) // 1.0 * 100 default
+  // derive current rate as float for calculations
+  const currentRate = useMemo(() => targetCentirate / 100, [targetCentirate])
+  const [targetBpm, setTargetBpm] = useState<number | ''>(
+    baseBpm ? Math.round(baseBpm * (centirate / 100)) : ''
+  )
   const [lnMode, setLnMode] = useState<'none' | 'noln' | 'fullln'>('none')
   const [lnGapMs, setLnGapMs] = useState(75)
   const [lnMinDistanceMs, setLnMinDistanceMs] = useState(40)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Generate unique id for target BPM input for a11y
+  const targetBpmInputId = useId()
+
+  // Keep local centirate in sync when parent changes (e.g., external controls)
+  useEffect(() => {
+    setTargetCentirate(centirate)
+  }, [centirate])
+
+  // Recompute target BPM when centirate or base BPM changes
+  useEffect(() => {
+    if (typeof baseBpm === 'number') {
+      setTargetBpm(Math.round(baseBpm * (targetCentirate / 100)))
+    } else {
+      setTargetBpm('')
+    }
+  }, [baseBpm, targetCentirate])
 
   const handleApply = async () => {
     const modifications: BeatmapModifications = {
@@ -63,6 +94,26 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
       setError(err instanceof Error ? err.message : String(err))
     } finally {
       setLoading(false)
+    }
+  }
+
+  // When user changes centirate via input, also propagate to parent
+  const handleCentirateChange = (newCentirate: number) => {
+    setTargetCentirate(newCentirate)
+    onCentirateChange?.(newCentirate)
+  }
+
+  // When user edits target BPM, recompute centirate and propagate
+  const handleTargetBpmChange = (value: string) => {
+    const parsed = parseFloat(value)
+    if (!Number.isNaN(parsed) && parsed > 0 && typeof baseBpm === 'number' && baseBpm > 0) {
+      const newRate = parsed / baseBpm
+      const newCentirate = Math.round(newRate * 100)
+      setTargetBpm(Math.round(parsed))
+      setTargetCentirate(newCentirate)
+      onCentirateChange?.(newCentirate)
+    } else if (value === '') {
+      setTargetBpm('')
     }
   }
 
@@ -123,11 +174,33 @@ const BeatmapEditPanel: React.FC<BeatmapEditPanelProps> = ({
               <CentirateInput
                 label="Rate"
                 value={targetCentirate}
-                onChange={setTargetCentirate}
+                onChange={handleCentirateChange}
                 min={50}
                 max={200}
                 step={10}
               />
+            </div>
+
+            {/* Target BPM */}
+            <div>
+              <label className="label" htmlFor={targetBpmInputId}
+              >
+                <span className="label-text">Target BPM</span>
+              </label>
+              <input
+                id={targetBpmInputId}
+                type="number"
+                className="input input-bordered w-full bg-base-100 text-base-content border-base-300 focus:border-primary focus:outline-none"
+                value={targetBpm === '' ? '' : targetBpm}
+                onChange={(e) => handleTargetBpmChange(e.target.value)}
+                placeholder={baseBpm ? Math.round(baseBpm).toString() : '—'}
+                disabled={typeof baseBpm !== 'number' || baseBpm <= 0}
+              />
+              {typeof baseBpm === 'number' && (
+                <div className="text-xs text-base-content/60 mt-1">
+                  Base BPM: {Math.round(baseBpm)} • Rate: {currentRate.toFixed(2)}x
+                </div>
+              )}
             </div>
 
             {/* LN Mode Section */}

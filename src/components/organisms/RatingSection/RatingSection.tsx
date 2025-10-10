@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FC } from 'react'
 import { ManiaRadarChart, RatingValue } from '@/components/atoms'
 import { NpsGraph } from '@/components/atoms/display/NpsGraph'
@@ -71,6 +71,14 @@ const RatingSection: FC<RatingSectionProps> = ({
     }
     return null
   }
+
+  // Compute base BPM (BPM at 1.0x) from current rates if available
+  const baseBpm = useMemo(() => {
+    if (!rates) return null
+    const rateFactor = rates.centirate / 100
+    if (rateFactor <= 0) return null
+    return rates.bpm / rateFactor
+  }, [rates])
 
   if (error) {
     return (
@@ -154,6 +162,9 @@ const RatingSection: FC<RatingSectionProps> = ({
         onClose={() => setIsEditPanelOpen(false)}
         initialOd={rates?.rating[0]?.rating}
         initialHp={rates?.rating[0]?.rating}
+        centirate={centirate}
+        onCentirateChange={onCentirateChange}
+        baseBpm={baseBpm}
       />
     </div>
   )
