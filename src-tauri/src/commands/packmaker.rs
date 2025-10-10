@@ -1,5 +1,5 @@
 use tauri::{AppHandle, Manager};
-use crate::core::packmaker::{SharedPackMaker, PackMetadata, get_public_pack};
+use crate::core::packmaker::{SharedPackMaker, PackMetadata, get_public_pack, update_pack_beatmap_version, PackBeatmapModifications, update_pack_beatmap};
 use crate::core::beatmap::monitoring::CurrentBeatmapWithRates;
 use crate::core::packmaker::add_current_to_pack;
 
@@ -15,6 +15,18 @@ pub async fn add_to_pack(app_handle: AppHandle) -> Result<(), String> {
 pub async fn get_pack(app_handle: AppHandle) -> Result<(PackMetadata, Vec<crate::core::packmaker::PublicBeatmapData>), String> {
     let pack = app_handle.state::<SharedPackMaker>();
     Ok(get_public_pack(&pack).await)
+}
+
+#[tauri::command]
+pub async fn update_pack_beatmap_version_cmd(app_handle: AppHandle, index: usize, new_version: String) -> Result<(), String> {
+    let pack = app_handle.state::<SharedPackMaker>();
+    update_pack_beatmap_version(&pack, index, new_version).await
+}
+
+#[tauri::command]
+pub async fn update_pack_beatmap_cmd(app_handle: AppHandle, index: usize, modifications: PackBeatmapModifications) -> Result<(), String> {
+    let pack = app_handle.state::<SharedPackMaker>();
+    update_pack_beatmap(&pack, index, modifications).await
 }
 
 #[tauri::command]

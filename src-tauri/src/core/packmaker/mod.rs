@@ -8,7 +8,7 @@ use crate::core::preferences;
 use std::fs;
 use std::str::FromStr;
 use rosu_map::Beatmap as RmBeatmap;
-
+    
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 pub struct PackMetadata {
     pub name: String,
@@ -76,6 +76,147 @@ pub async fn get_public_pack(pack: &SharedPackMaker) -> (PackMetadata, Vec<Publi
         .map(|b| PublicBeatmapData { beatmap: b.beatmap.clone() })
         .collect::<Vec<_>>();
     (meta, list)
+}
+
+pub async fn update_pack_beatmap_version(
+    pack: &SharedPackMaker,
+    index: usize,
+    new_version: String,
+) -> Result<(), String> {
+    let mut guard = pack.lock().await;
+    let item = guard
+        .beatmaps
+        .get_mut(index)
+        .ok_or_else(|| "Invalid beatmap index".to_string())?;
+
+    // Update rm_beatmap by editing the version field
+    if let Some(ref mut rm) = item.rm_beatmap {
+        // Encode, replace Version: line, and re-parse to ensure consistency
+        let osu_text = rm
+            .encode_to_string()
+            .map_err(|e| format!("Failed to encode beatmap: {}", e))?;
+        // Replace Version: ... line (difficulty name)
+        let replaced = replace_version_line(&osu_text, &new_version);
+        let reparsed = RmBeatmap::from_str(&replaced)
+            .map_err(|e| format!("Failed to reparse beatmap after version update: {}", e))?;
+        *rm = reparsed;
+        // Update the display Beatmapset difficulty name too
+        if let Some(first) = item.beatmap.beatmaps.get_mut(0) {
+            first.name = new_version.clone();
+        }
+    } else {
+        return Err("No rm_beatmap stored for this item".to_string());
+    }
+
+    Ok(())
+}
+
+fn replace_version_line(osu_text: &str, new_version: &str) -> String {
+    let mut out = String::with_capacity(osu_text.len() + 16);
+    for line in osu_text.lines() {
+        if line.starts_with("Version:") {
+            out.push_str("Version:");
+            out.push(' ');
+            out.push_str(new_version);
+            out.push('\n');
+        } else {
+            out.push_str(line);
+            out.push('\n');
+        }
+    }
+    out
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct PackBeatmapModifications {
+    pub od: Option<f32>,
+    pub hp: Option<f32>,
+    pub target_rate: Option<f32>,
+    pub ln_mode: Option<String>,
+    pub ln_gap_ms: Option<f32>,
+    pub ln_min_distance_ms: Option<f32>,
+    pub version_name: Option<String>,
+}
+
+pub async fn update_pack_beatmap(
+    pack: &SharedPackMaker,
+    index: usize,
+    modifications: PackBeatmapModifications,
+) -> Result<(), String> {
+    use crate::core::edit::rates::rates::rate;
+    use crate::core::edit::ln::ln::full_ln;
+    use crate::core::edit::ln::noln::noln;
+    use std::str::FromStr;
+
+    let mut guard = pack.lock().await;
+    let item = guard
+        .beatmaps
+        .get_mut(index)
+        .ok_or_else(|| "Invalid beatmap index".to_string())?;
+
+    let rm = item
+        .rm_beatmap
+        .as_mut()
+        .ok_or_else(|| "No rm_beatmap stored for this item".to_string())?;
+
+    // Encode to text to allow version name replacement; keep a working copy
+    let mut osu_text = rm
+        .encode_to_string()
+        .map_err(|e| format!("Failed to encode beatmap: {}", e))?;
+
+    // Apply OD
+    if let Some(od) = modifications.od {
+        if (rm.overall_difficulty - od).abs() > f32::EPSILON {
+            rm.overall_difficulty = od;
+        }
+        if let Some(first) = item.beatmap.beatmaps.get_mut(0) {
+            first.od = od as f64;
+        }
+    }
+
+    // Apply HP
+    if let Some(hp) = modifications.hp {
+        if (rm.hp_drain_rate - hp).abs() > f32::EPSILON {
+            rm.hp_drain_rate = hp;
+        }
+        if let Some(first) = item.beatmap.beatmaps.get_mut(0) {
+            first.hp = hp as f64;
+        }
+    }
+
+    // Apply rate
+    if let Some(target_rate) = modifications.target_rate {
+        if (target_rate - 1.0).abs() > f32::EPSILON {
+            rate(target_rate as f64, rm);
+        }
+    }
+
+    // Apply LN modifications
+    if let Some(ln_mode) = &modifications.ln_mode {
+        match ln_mode.as_str() {
+            "fullln" => {
+                if let (Some(gap_ms), Some(min_distance)) = (modifications.ln_gap_ms, modifications.ln_min_distance_ms) {
+                    full_ln(rm, gap_ms as f64, min_distance as f64);
+                }
+            }
+            "noln" => {
+                noln(rm);
+            }
+            _ => {}
+        }
+    }
+
+    // Version name replacement (difficulty name)
+    if let Some(name) = modifications.version_name {
+        osu_text = replace_version_line(&osu_text, &name);
+        *rm = RmBeatmap::from_str(&osu_text)
+            .map_err(|e| format!("Failed to reparse beatmap after version update: {}", e))?;
+        if let Some(first) = item.beatmap.beatmaps.get_mut(0) {
+            first.name = name;
+        }
+    }
+
+    Ok(())
 }
 
 

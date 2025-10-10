@@ -58,7 +58,9 @@ pub fn run() {
             crate::commands::preferences::set_theme,
             crate::commands::packmaker::add_to_pack,
             crate::commands::packmaker::get_pack,
-            crate::commands::packmaker::update_pack_metadata
+            crate::commands::packmaker::update_pack_metadata,
+            crate::commands::packmaker::update_pack_beatmap_version_cmd,
+            crate::commands::packmaker::update_pack_beatmap_cmd
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
